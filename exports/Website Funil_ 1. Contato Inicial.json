@@ -1,0 +1,581 @@
+{
+  "name": "Website Funil: 1. Contato Inicial",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "838bee1c-9f78-4ee5-8e3f-084fe9c377bb",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        -176
+      ],
+      "id": "c773eaef-b4c1-47fd-9f1d-d66d14c8ff9a",
+      "name": "Webhook",
+      "webhookId": "838bee1c-9f78-4ee5-8e3f-084fe9c377bb"
+    },
+    {
+      "parameters": {
+        "tableId": "leads",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "nome",
+              "fieldValue": "={{ $('Normalize Data').item.json.name }}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $('Normalize Data').item.json.email }}"
+            },
+            {
+              "fieldId": "origem",
+              "fieldValue": "Website"
+            },
+            {
+              "fieldId": "empresa",
+              "fieldValue": "={{ $('Normalize Data').item.json.company }}"
+            },
+            {
+              "fieldId": "interesse",
+              "fieldValue": "={{ $('Normalize Data').item.json.service }}"
+            },
+            {
+              "fieldId": "status_funil",
+              "fieldValue": "Contato Inicial"
+            },
+            {
+              "fieldId": "role",
+              "fieldValue": "={{ $('Normalize Data').item.json.role }}"
+            },
+            {
+              "fieldId": "telefone",
+              "fieldValue": "={{ $('Normalize Data').item.json.tel }}"
+            },
+            {
+              "fieldId": "schedule",
+              "fieldValue": "={{ $('Normalize Data').item.json.schedule }}"
+            },
+            {
+              "fieldId": "briefing",
+              "fieldValue": "={{ $('Normalize Data').item.json.briefing }}"
+            },
+            {
+              "fieldId": "agendamento_token",
+              "fieldValue": "={{ $('Create Scheduling').item.json.success ? $('Create Scheduling').item.json.data.token : '' }}"
+            },
+            {
+              "fieldId": "agendamento_links",
+              "fieldValue": "={{ $('Create Scheduling').item.json.success ? $('Create Scheduling').item.json.data.links : '' }}"
+            },
+            {
+              "fieldId": "agendamento_post_id",
+              "fieldValue": "={{ $('Create Scheduling').item.json.success ? $('Create Scheduling').item.json.data.id : 0 }}"
+            },
+            {
+              "fieldId": "agendamento_status",
+              "fieldValue": "={{ $('Create Scheduling').item.json.success ? 'pending' : 'error' }}"
+            },
+            {
+              "fieldId": "agendamento_expires_at",
+              "fieldValue": "={{ $('Create Scheduling').item.json.success ? new Date($('Create Scheduling').item.json.data.expira_em * 1000) : $now }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1808,
+        -176
+      ],
+      "id": "c6f66e98-dae3-4ff1-a670-1733f9dfcffa",
+      "name": "Salvar Lead",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aiBpwmRxaTLKjgmp",
+          "name": "WhoWorks Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "interacoes",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $('Salvar Lead').item.json.id }}"
+            },
+            {
+              "fieldId": "canal",
+              "fieldValue": "e-mail"
+            },
+            {
+              "fieldId": "historico",
+              "fieldValue": "={{ \"Mensagem inicial automática enviada ao lead confirmando o recebimento do contato e solicitando a confirmação do agendamento\".split() }}"
+            },
+            {
+              "fieldId": "update_at",
+              "fieldValue": "={{ $now }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        -176
+      ],
+      "id": "ed3c8ceb-666f-4c92-b942-d062c431560d",
+      "name": "Atualiza Interação",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aiBpwmRxaTLKjgmp",
+          "name": "WhoWorks Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        64
+      ],
+      "id": "7f46abf9-ccec-43c7-88ba-da05191ec79e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "FPvqDxTQ8K9jjUHg",
+          "name": "CyberReport APIKEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=A data preferida informada pelo lead no formulário é: **{{ $json.schedule }}**\n\n**Instruções para execução:**\n\n1. **Prioridade máxima**: Use a data acima como ponto de partida para a busca.\n   - Verifique se essa data é um dia útil e não é feriado.\n   - Se for feriado ou fim de semana, **pule para o Passo 3** imediatamente.\n\n2. **Busca inicial**: Tente encontrar os 3 slots **apenas neste dia**.\n   - Respeite o horário comercial (11:00-16:00) e o buffer de 10min entre slots.\n   - Se encontrar 3 slots neste dia, retorne o JSON com todos eles.\n\n3. **Expansão (fallback)**: Se não encontrar 3 slots na data fornecida:\n   - Expanda a busca para os **próximos 5 dias úteis** a partir da data fornecida.\n   - Exemplo: Se a data for 10/08/2026 (segunda), busque de 11/08 a 14/08 (terça a sexta) e, se necessário, 17/08 (segunda seguinte) - sempre pulando finais de semana.\n   - **Ignore feriados** nacionais durante a expansão.\n   - Continue buscando até encontrar exatamente 3 slots, sempre priorizando as datas mais próximas da original.\n\n4. **Durante toda a busca**:\n   - Mantenha o buffer de 10 minutos entre os slots sugeridos.\n   - Garanta que os horários estejam entre 11:00 e 16:00.\n   - Verifique conflitos com a agenda usando a ferramenta do Google Calendar.\n\n**IMPORTANTE**: Você DEVE usar a ferramenta Google Calendar para verificar a disponibilidade real. Não invente horários.\n\nApós encontrar os 3 slots, retorne APENAS o JSON no formato exigido pelo System Prompt.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Você é um assistente de IA integrado a um fluxo de trabalho n8n. Você tem acesso a uma ferramenta do Google Agenda que pode verificar a disponibilidade.\n\nSua tarefa é encontrar 3 horários disponíveis para uma reunião que dure entre 15 e 30 minutos.\n\n**Regras Fixas (Sempre aplicar):**\n1. **Dias permitidos**: Segunda a sexta-feira (nunca finais de semana).\n2. **Horário comercial**: Entre 11:00 e 16:00 (America/Sao_Paulo). A reunião deve começar às 11:00 ou depois e terminar até às 16:00.\n3. **Duração**: Cada slot deve ter no mínimo 30 minutos de duração para acomodar a reunião de 15-30 min.\n4. **Buffer entre slots**: Mínimo de 10 minutos entre o término de um slot e o início do próximo.\n   - Exemplo: Slot-1 das 11:00 às 11:30 → Slot-2 só pode começar às 11:40.\n5. **Conflitos**: Os slots não podem conflitar com eventos existentes na agenda.\n6. **Feriados**: Ignore feriados nacionais brasileiros (ex: 07/09, 12/10, 02/11, 15/11, 20/11, 25/12, etc.).\n\n**Lógica de busca (baseada na data fornecida pelo lead):**\n- A data de referência será passada via variável: `{{ $json.schedule }}`.\n- **Passo 1**: Busque slots **exclusivamente na data fornecida pelo lead**.\n- **Passo 2**: Se encontrar 3 slots nesse dia, retorne-os.\n- **Passo 3**: Se NÃO encontrar 3 slots nesse dia, expanda a busca para os **próximos 5 dias úteis a partir da data fornecida** (excluindo finais de semana e feriados).\n- **Passo 4**: Priorize sempre as datas mais próximas da data original.\n\n**Formato de saída (JSON obrigatório):**\n{\n  \"suggested_dates\": [\n    {\n      \"id\": \"slot-1\",\n      \"starts_at\": \"YYYY-MM-DDTHH:MM:SS-03:00\",\n      \"ends_at\": \"YYYY-MM-DDTHH:MM:SS-03:00\",\n      \"timezone\": \"America/Sao_Paulo\",\n      \"label\": \"DD/MM/YYYY às HH:MM\"\n    },\n    {\n      \"id\": \"slot-2\",\n      \"starts_at\": \"YYYY-MM-DDTHH:MM:SS-03:00\",\n      \"ends_at\": \"YYYY-MM-DDTHH:MM:SS-03:00\",\n      \"timezone\": \"America/Sao_Paulo\",\n      \"label\": \"DD/MM/YYYY às HH:MM\"\n    },\n    {\n      \"id\": \"slot-3\",\n      \"starts_at\": \"YYYY-MM-DDTHH:MM:SS-03:00\",\n      \"ends_at\": \"YYYY-MM-DDTHH:MM:SS-03:00\",\n      \"timezone\": \"America/Sao_Paulo\",\n      \"label\": \"DD/MM/YYYY às HH:MM\"\n    }\n  ]\n}\n\n**Atenção:** \n- Use o offset `-03:00` para o timezone.\n- A `label` deve estar no formato brasileiro (ex: \"29/07/2026 às 14:00\").\n- Retorne APENAS o JSON, sem texto adicional."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        512,
+        -176
+      ],
+      "id": "77f879aa-d058-4286-b2b3-9d7e24a0019a",
+      "name": "findSchedule"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"suggested_dates\": [\n    {\n      \"id\": \"slot-1\",\n      \"starts_at\": \"2026-07-29T11:00:00-03:00\",\n      \"ends_at\": \"2026-07-29T11:30:00-03:00\",\n      \"timezone\": \"America/Sao_Paulo\",\n      \"label\": \"29/07/2026 às 11:00\"\n    },\n    {\n      \"id\": \"slot-2\",\n      \"starts_at\": \"2026-07-30T14:30:00-03:00\",\n      \"ends_at\": \"2026-07-30T15:00:00-03:00\",\n      \"timezone\": \"America/Sao_Paulo\",\n      \"label\": \"30/07/2026 às 14:30\"\n    },\n    {\n      \"id\": \"slot-3\",\n      \"starts_at\": \"2026-07-31T15:00:00-03:00\",\n      \"ends_at\": \"2026-07-31T15:30:00-03:00\",\n      \"timezone\": \"America/Sao_Paulo\",\n      \"label\": \"31/07/2026 às 15:00\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        720,
+        64
+      ],
+      "id": "ae35a89a-5a8b-46c3-879e-6870cc33ea9d",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3c6a6963-0db0-49f9-a0a7-c1f352c0502e",
+              "name": "URLBASE",
+              "value": "={{ $('Normalize Data').item.json.environment = 'produção' ? 'https://whoworks.com.br' : 'https://sandbox.whoworks.com.br' }}",
+              "type": "string"
+            },
+            {
+              "id": "504ced26-5c8e-4aa0-882d-5e1f9b836eab",
+              "name": "URL_BASE",
+              "value": "https://whoworks.com.br",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        -176
+      ],
+      "id": "138ad17c-93b5-4f64-863b-b468fc8623eb",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f133aee5-3627-427e-8a6e-120629c5bfe7",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1360,
+        -176
+      ],
+      "id": "a00f82f3-93b1-45b3-8de1-32ccb0e44ad6",
+      "name": "Scheduling Error"
+    },
+    {
+      "parameters": {
+        "fromEmail": "joanez@whoworks.com.br",
+        "toEmail": "={{ $('Webhook').item.json.body['your-email'] }}",
+        "subject": "={{ \"Confirmação de Contato: \" + $('Normalize Data').item.json.service }}",
+        "html": "=<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Bem vindo(a) {{ $('Normalize Data').item.json.name }} - WhoWorks Consulting</title>\n    <style type=\"text/css\">\n        /* Fallback para clientes de e-mail que não suportam @import */\n        .v1container {\n            width: 100%;\n            max-width: 640px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            font-family: 'Poppins', 'Segoe UI', Verdana, sans-serif;\n        }\n        .v1header {\n            padding: 32px 24px 24px;\n            background: #ffffff;\n            border-bottom: 1px solid #e2e8f0;\n        }\n        .v1header-logo {\n            width: 160px;\n        }\n        .v1agent-card {\n            margin-top: 20px;\n            padding: 16px;\n            border: 1px solid #e2e8f0;\n            border-radius: 10px;\n            display: flex;\n            align-items: center;\n            background: #f8fafc;\n        }\n        .v1agent-avatar {\n            width: 54px;\n            height: 54px;\n            border-radius: 50%;\n            background: #e2e8f0;\n            margin-right: 14px;\n        }\n        .v1agent-info h4 {\n            margin: 0;\n            font-size: 15px;\n            font-weight: bold;\n        }\n        .v1agent-info p {\n            margin: 2px 0 0;\n            font-size: 13px;\n            color: #555;\n        }\n        .v1hero {\n            padding: 36px 24px 24px;\n            text-align: left;\n            border-bottom: 1px solid #e2e8f0;\n        }\n        .v1hero-pretitle {\n            font-size: 13px;\n            text-transform: uppercase;\n            font-weight: 700;\n            color: #0366D6;\n            letter-spacing: 0.5px;\n        }\n        .v1hero-title {\n            font-size: 26px;\n            font-weight: 800;\n            margin: 12px 0;\n            color: #1A202C;\n        }\n        .v1hero-desc {\n            font-size: 15px;\n            line-height: 1.5;\n            color: #444;\n            margin-bottom: 24px;\n        }\n        .v1button {\n            display: inline-block;\n            width: 100%;\n            padding: 14px 22px;\n            color: #ffffff !important;\n            background-color: #0366D6;\n            text-decoration: none;\n            font-size: 15px;\n            border-radius: 8px;\n            font-weight: 700;\n            margin-top: 8px;\n            box-shadow: 0 4px 14px rgba(3, 102, 214, 0.25);\n            transition: all 0.2s;\n            text-align: center;\n            box-sizing: border-box;\n        }\n        .v1button:hover {\n            background-color: #0255b3;\n            box-shadow: 0 6px 20px rgba(3, 102, 214, 0.35);\n        }\n        .v1button .v1button-icon {\n            display: inline-block;\n            margin-right: 8px;\n            font-size: 18px;\n            vertical-align: middle;\n        }\n        .v1button .v1button-label {\n            display: inline-block;\n            vertical-align: middle;\n        }\n        .v1button .v1button-time {\n            display: block;\n            font-size: 13px;\n            font-weight: 400;\n            opacity: 0.85;\n            margin-top: 2px;\n        }\n        .v1button-group {\n            display: flex;\n            flex-direction: column;\n            gap: 10px;\n            margin: 16px 0 8px;\n        }\n        .v1safe-note {\n            font-size: 12px;\n            color: #718096;\n            margin-top: 8px;\n        }\n        .v1content {\n            font-size: 15px;\n            line-height: 1.6;\n            color: #2D3748;\n        }\n        .v1content ul {\n            padding-left: 20px;\n            margin: 16px 0;\n        }\n        .v1content ul li {\n            margin-bottom: 6px;\n        }\n        .v1footer {\n            padding: 32px 24px;\n            font-size: 13px;\n            color: #4A5568;\n            background: #f0f4f8;\n            border-top: 1px solid #e2e8f0;\n            text-align: left;\n        }\n        .v1footer a {\n            color: #0366D6;\n            text-decoration: none;\n        }\n        .v1footer a:hover {\n            text-decoration: underline;\n        }\n        .v1signature {\n            padding: 0 40px 40px 40px;\n            font-size: 14px;\n            color: #1A202C;\n        }\n        .v1signature a {\n            color: #0366D6;\n            text-decoration: none;\n        }\n        .v1signature a:hover {\n            text-decoration: underline;\n        }\n        .v1badge {\n            display: inline-block;\n            background: #66FFCC;\n            color: #1A202C;\n            font-size: 11px;\n            font-weight: 700;\n            text-transform: uppercase;\n            letter-spacing: 0.5px;\n            padding: 2px 10px;\n            border-radius: 50px;\n        }\n        .v1lead-data {\n            background: #f8fafc;\n            border-left: 4px solid #0366D6;\n            padding: 12px 16px;\n            border-radius: 8px;\n            margin: 16px 0;\n            font-size: 14px;\n            color: #1A202C;\n        }\n        .v1lead-data strong {\n            color: #0366D6;\n        }\n        .v1lead-data .label {\n            font-weight: 600;\n            color: #4A5568;\n        }\n        @media only screen and (max-width: 600px) {\n            .v1container {\n                width: 100% !important;\n                padding: 0 !important;\n            }\n            .v1profile-box {\n                text-align: center !important;\n                padding-top: 15px !important;\n            }\n            .v1profile-box table {\n                margin: 0 auto !important;\n            }\n            .v1header {\n                padding: 20px 16px !important;\n            }\n            .v1hero {\n                padding: 24px 16px !important;\n            }\n            .v1signature {\n                padding: 0 16px 30px !important;\n            }\n            .v1footer {\n                padding: 20px 16px !important;\n            }\n            .v1button-group {\n                gap: 8px;\n            }\n            .v1button {\n                padding: 12px 18px;\n                font-size: 14px;\n            }\n            .v1lead-data {\n                font-size: 13px;\n                padding: 10px 12px;\n            }\n        }\n    </style>\n</head>\n\n<body style=\"font-family: 'Poppins', 'Segoe UI', Verdana, sans-serif; font-size: 10pt; margin:0; padding:0; background:#f0f4f8;\">\n\n    <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#f0f4f8\">\n        <tr>\n            <td align=\"center\" style=\"padding:40px 15px;\">\n                <table class=\"v1container\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#ffffff\" style=\"border-radius:16px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,0.04);\">\n                    \n                    <!-- HEADER -->\n                    <tr>\n                        <td style=\"background:#0B0E14; padding:30px 40px;\">\n                            <table width=\"100%\">\n                                <tr>\n                                    <td width=\"50%\" valign=\"middle\">\n                                        <img src=\"https://whoworks.com.br/wp-content/uploads/2025/06/WhoWorks-Logotipo-Lab-3.svg\" width=\"200\" alt=\"WhoWorks Logo\" style=\"display:block; filter:brightness(0) invert(1);\" />\n                                    </td>\n                                    <td width=\"50%\" valign=\"middle\" align=\"right\" class=\"v1profile-box\">\n                                        <table style=\"background:#1A202C; padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);\">\n                                            <tr>\n                                                <td>\n                                                    <table>\n                                                        <tr>\n                                                            <td rowspan=\"3\" valign=\"top\" style=\"padding-right:12px;\">\n                                                                <img src=\"https://ui-avatars.com/api/?name=Joanez+Andrades&background=0366D6&color=fff&size=60\" width=\"46\" alt=\"Avatar Joanez Andrades\" style=\"border-radius:50%; border:2px solid #66FFCC;\" />\n                                                            </td>\n                                                            <td style=\"font-size:14px; color:#F8FAFC; font-weight:600;\">Joanez Andrades</td>\n                                                        </tr>\n                                                        <tr>\n                                                            <td style=\"font-size:12px; color:#A0AEC0;\">Founder &amp; Lead Engineer</td>\n                                                        </tr>\n                                                        <tr>\n                                                            <td style=\"font-size:12px; color:#66FFCC;\">WhoWorks Consulting</td>\n                                                        </tr>\n                                                    </table>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </td>\n                                </tr>\n                            </table>\n                        </td>\n                    </tr>\n\n                    <!-- HERO -->\n                    <tr>\n                        <td style=\"padding:40px 40px 20px 40px;\">\n                            <div class=\"v1hero\" style=\"padding:0; border-bottom: none;\">\n                                <div class=\"v1hero-pretitle\">\n                                    <span class=\"v1badge\" style=\"background:#66FFCC; color:#1A202C; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 10px; border-radius:50px; display:inline-block;\">Olá, {{ $('Normalize Data').item.json.name }}!</span>\n                                </div>\n                                <div class=\"v1hero-title\">Vamos agendar uma conversa sobre seu projeto</div>\n                                <div class=\"v1content\">\n                                    <p>Recebemos suas informações e queremos entender melhor o que você precisa. Para isso, agende uma conversa com nossa equipe em um dos horários abaixo.</p>\n\n                                    <!-- Dados do lead destacados -->\n                                    <div class=\"v1lead-data\">\n                                        <p style=\"margin:0 0 6px 0;\"><span class=\"label\">Empresa:</span> <strong>{{ $('Normalize Data').item.json.company }}</strong></p>\n                                        <p style=\"margin:0 0 6px 0;\"><span class=\"label\">Serviço de interesse:</span> <strong>{{ $('Normalize Data').item.json.service }}</strong></p>\n                                        <p style=\"margin:0 0 6px 0;\"><span class=\"label\">Cargo/Função:</span> <strong>{{ $('Normalize Data').item.json.role }}</strong></p>\n                                        <p style=\"margin:0 0 6px 0;\"><span class=\"label\">Telefone:</span> <strong>{{ $('Normalize Data').item.json.tel }}</strong></p>\n                                        <p style=\"margin:0;\"><span class=\"label\">Problema relatado:</span><br />\n                                        <em style=\"color:#4A5568;\">“{{ $('Normalize Data').item.json.problem }}”</em></p>\n                                    </div>\n\n                                    <p style=\"margin-top:16px;\">Escolha o horário que funcionar melhor para você:</p>\n                                </div>\n\n                                <!-- Botões com datas/horários específicos (placeholders) -->\n                                <div class=\"v1button-group\">\n                                    <a href=\"{{ $('Create Scheduling').item.json.data.links[0].url }}\" class=\"v1button\" target=\"_blank\" rel=\"noopener noreferrer\">\n                                        <span class=\"v1button-icon\">📅</span>\n                                        <span class=\"v1button-label\">Agendar para: {{ $('Create Scheduling').item.json.data.links[0].label }} (30 min)</span>\n                                    </a>\n                                    <a href=\"{{ $('Create Scheduling').item.json.data.links[1].url }}\" class=\"v1button\" target=\"_blank\" rel=\"noopener noreferrer\">\n                                        <span class=\"v1button-icon\">📅</span>\n                                        <span class=\"v1button-label\">Agendar para: {{ $('Create Scheduling').item.json.data.links[1].label }} (30 min)</span>\n                                    </a>\n                                    <a href=\"{{ $('Create Scheduling').item.json.data.links[2].url }}\" class=\"v1button\" target=\"_blank\" rel=\"noopener noreferrer\">\n                                        <span class=\"v1button-icon\">📅</span>\n                                        <span class=\"v1button-label\">Agendar para: {{ $('Create Scheduling').item.json.data.links[2].label }} (30 min)</span>\n                                    </a>\n                                </div>\n\n                                <p class=\"v1safe-note\" style=\"font-size:12px; color:#718096; margin-top:12px;\">Você será redirecionado para nossa agenda. Todos os links são seguros.</p>\n                                <p style=\"font-size:14px; color:#4A5568; margin-top:16px;\">Caso nenhum horário seja conveniente, responda a este e-mail que ajustamos.</p>\n                            </div>\n                        </td>\n                    </tr>\n\n                    <!-- SIGNATURE -->\n                    <tr>\n                        <td class=\"v1signature\" style=\"padding:0 40px 40px 40px; font-size:14px; color:#1A202C;\">\n                            Atenciosamente,<br><br>\n                            <strong>Joanez Andrades</strong><br>\n                            Founder &amp; Lead Engineer — WhoWorks Consulting<br>\n                            <a href=\"mailto:contato@whoworks.com.br\" style=\"color:#0366D6; text-decoration:none;\">contato@whoworks.com.br</a> &middot;\n                            <a href=\"https://whoworks.com.br\" style=\"color:#0366D6; text-decoration:none;\" target=\"_blank\" rel=\"noopener noreferrer\">whoworks.com.br</a>\n                        </td>\n                    </tr>\n\n                    <!-- FOOTER -->\n                    <tr>\n                        <td style=\"padding:20px; text-align:center; background:#f0f4f8; font-size:12px; color:#4A5568; border-top:1px solid #e2e8f0;\">\n                            WhoWorks Consulting<br>\n                            Soluções Técnicas em WordPress &bull; Automação &bull; Integrações<br>\n                            &copy; 2026 WhoWorks Consulting. Todos os direitos reservados.\n                        </td>\n                    </tr>\n\n                </table>\n            </td>\n        </tr>\n    </table>\n\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1600,
+        -272
+      ],
+      "id": "1b37b058-3038-46cc-9dca-6d01acdaa7a0",
+      "name": "Dispara Email",
+      "webhookId": "c4676ab5-2e72-4b7b-b2cf-834b15b44835",
+      "credentials": {
+        "smtp": {
+          "id": "R3GCqg8tToq0M05g",
+          "name": "SMTP account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "8652065969",
+        "text": "=<b>📋 NOVO LEAD - LOG COMPLETO</b>\n\n<b>👤 Nome:</b> {{ $('Normalize Data').item.json.name }}\n<b>📧 E-mail:</b> {{ $('Normalize Data').item.json.email }}\n<b>🔧 Serviço:</b> {{ $('Normalize Data').item.json.service }}\n<b>📝 Descrição:</b> {{ $('Normalize Data').item.json.problem }}\n\n<b>📅 Agendamento Criado:</b> {{ $('Create Scheduling').first().json.success ? '✅ Sim' : '❌ Não'; }}\n<b>📨 E-mail Disparado:</b> {{ $('Dispara Email').item.json.error ? '❌ Não' : '✅ Sim'; }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_notification": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2256,
+        -176
+      ],
+      "id": "47508104-9c63-4e83-b2d5-5836397055a3",
+      "name": "Notificação",
+      "webhookId": "6e71aa97-8077-4f33-b66f-bb3865376d46",
+      "retryOnFail": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "dbvvNFXTXGlubgAv",
+          "name": "WhoWorks Sentinela BOT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "8dfb3668a50319c87f320ab3dff1fcbf8709e4188136a582e4a663f6b4e80f48@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "WhoWorks"
+        },
+        "limit": 10,
+        "timeMin": "={{ $('Normalize Data').item.json.schedule.toDateTime() }}",
+        "timeMax": "={{ $('Normalize Data').item.json.schedule.toDateTime().plus({days: 5}) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        64
+      ],
+      "id": "baec7fb2-8c15-4764-9dc7-646b2135efed",
+      "name": "Verificar Agenda",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "mQfPGfwD29hCn2tT",
+          "name": "Google Account(jnz93.dev)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.URL_BASE + '/wp-json/flowkit/v1/agendamento/criar' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"email\": \"{{ $('Normalize Data').item.json.email }}\",\n  \"slots\": {{ $('findSchedule').item.json.output.suggested_dates.toJsonString() }},\n  \"description\": \"{{ $('Normalize Data').item.json.problem }}\",\n  \"summary\": \"{{ $('Normalize Data').item.json.service }} - {{ $('Normalize Data').item.json.company ? $('Normalize Data').item.json.company : $('Normalize Data').item.json.name }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1136,
+        -176
+      ],
+      "id": "bddcc822-2c87-40e5-ae3a-347586a1d84a",
+      "name": "Create Scheduling",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "2clwxbVPBsvnC4H9",
+          "name": "WhoWorks Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const desafioParaBriefing = {\n  \"Perda ou desorganização de leads\": \"Operação Comercial e Leads\",\n  \"Falta de suporte técnico\": \"Técnico WordPress/WooCommerce\",\n  \"Processo manual e repetitivo\": \"Automação, Integrações e Desenvolvimento\",\n  \"Integração entre sistemas\": \"Automação, Integrações e Desenvolvimento\",\n  \"Problemas em WordPress ou WooCommerce\": \"Técnico WordPress/WooCommerce\",\n  \"Desenvolvimento de nova funcionalidade\": \"Automação, Integrações e Desenvolvimento\",\n  \"Performance ou segurança\": \"Técnico WordPress/WooCommerce\",\n  \"Outro\": \"Triagem Geral/Outro\"\n};\n\n/**\n * Retorna o briefing recomendado para um determinado desafio.\n * @param {string} desafio - O texto do desafio selecionado no formulário.\n * @returns {string} O briefing correspondente ou undefined se não encontrado.\n */\nfunction mapearBriefing(desafio) {\n  return desafioParaBriefing[desafio];\n}\nconst briefing = mapearBriefing($json['body']['your-service'].trim());\n\nconst endereco = $('Webhook').first().json.headers['user-agent'].split('; ')[1];\nconst ambiente = endereco.startsWith('https://sandbox.') ? 'sandbox' : 'produção';\n\nreturn [{\n  name: $json['body']['your-name'].trim() || '',\n  email: $json['body']['your-email'].trim() || '',\n  company: $json['body']['your-company'].trim() || '',\n  service: $json['body']['your-service'].trim() || '',\n  problem: $json['body']['your-problem'].trim() || '',\n  role: $json['body']['your-role'].trim() || '',\n  tel: $json['body']['your-tel'].trim() || '',\n  schedule: $json['body']['your-schedule'].trim() || '',\n  briefing: briefing,\n  environment: ambiente,\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        -176
+      ],
+      "id": "8f85071c-d30d-4d81-b861-35d1f364367e",
+      "name": "Normalize Data"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-lfs6.srv1550174.hstgr.cloud",
+            "user-agent": "WordPress/7.1.3; https://whoworks.com.br",
+            "content-length": "302",
+            "accept": "*/*",
+            "accept-encoding": "deflate, gzip, br",
+            "content-type": "application/json; charset=UTF-8",
+            "x-forwarded-for": "2a02:4780:13:1170:0:159e:737c:1",
+            "x-forwarded-host": "n8n-lfs6.srv1550174.hstgr.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "srv1550174",
+            "x-real-ip": "2a02:4780:13:1170:0:159e:737c:1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "your-service": "Perda ou desorganização de leads",
+            "your-problem": "organizar operação",
+            "your-role": "Profissional liberal",
+            "your-company": "Expresss Corp.",
+            "your-name": "Maria Danete",
+            "your-email": "joanez_andrades@hotmail.com",
+            "your-tel": "(45) 64564-6545",
+            "your-schedule": "2026-10-30"
+          },
+          "webhookUrl": "https://n8n-lfs6.srv1550174.hstgr.cloud/webhook/838bee1c-9f78-4ee5-8e3f-084fe9c377bb",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Lead": {
+      "main": [
+        [
+          {
+            "node": "Atualiza Interação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualiza Interação": {
+      "main": [
+        [
+          {
+            "node": "Notificação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "findSchedule",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "findSchedule": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "findSchedule",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create Scheduling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scheduling Error": {
+      "main": [
+        [
+          {
+            "node": "Salvar Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Dispara Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dispara Email": {
+      "main": [
+        [
+          {
+            "node": "Salvar Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Agenda": {
+      "ai_tool": [
+        [
+          {
+            "node": "findSchedule",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Scheduling": {
+      "main": [
+        [
+          {
+            "node": "Scheduling Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Data": {
+      "main": [
+        [
+          {
+            "node": "findSchedule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "66469b43-589c-40ff-ab67-6be93e970a93",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14aca19250a37d2cf90830121913d504ce697564523af8686d5f54f4ff841f14"
+  },
+  "nodeGroups": [],
+  "id": "SqdLWQoWZZwInhEM",
+  "tags": [
+    {
+      "updatedAt": "2026-06-22T14:00:16.721Z",
+      "createdAt": "2026-06-22T14:00:16.721Z",
+      "id": "CdVBk4NBYDyhwDdJ",
+      "name": "Website Funil"
+    }
+  ]
+}

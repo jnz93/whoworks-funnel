@@ -1,0 +1,363 @@
+{
+  "name": "[SubWorkflow] WF3: Save Briefing & Action Plan",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "briefingTitle",
+              "type": "any"
+            },
+            {
+              "name": "briefingContent",
+              "type": "any"
+            },
+            {
+              "name": "actionPlanTitle",
+              "type": "any"
+            },
+            {
+              "name": "actionPlanContent",
+              "type": "any"
+            },
+            {
+              "name": "user_id",
+              "type": "number"
+            },
+            {
+              "name": "user_mail"
+            },
+            {
+              "name": "user_name"
+            },
+            {
+              "name": "environment"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b945a819-a035-4889-896c-68f6da78bb95",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Dados do Briefing (JSON):\n{{ $('When Executed by Another Workflow').item.json.briefingContent }}\n\nRelatório do Plano de Ação:\n{{ $('When Executed by Another Workflow').item.json.actionPlanContent }}"
+            },
+            {
+              "content": "=Você é um **Assistente de Geração de HTML para Briefings e Planos de Ação**. Sua função é transformar dados brutos de briefing e relatórios textuais em páginas HTML prontas para uso, seguindo estritamente os templates fornecidos.\n\n---\n\n## 📌 **Entradas Recebidas**\n\n1. **Dados do Briefing** – um objeto JSON contendo todos os campos submetidos no formulário (ex: `nome_completo`, `email`, `problema_principal` – array, etc.).  \n   *Exemplo de estrutura:*  \n   ```json\n   {\n     \"briefing-type\": \"Técnico WordPress/WooCommerce\",\n     \"nome-completo\": \"Lola Bunny\",\n     \"email\": \"lola@email.com\",\n     ...\n     \"problema_principal\": [\"Erro no site\", \"Lentidão\"],\n     \"canal_atualizacoes\": [\"E‑mail\", \"WhatsApp\"],\n     \"observacoes_finais\": \"Lorem ipsum...\"\n   }\n   ```\n\n2. **Relatório do Plano de Ação** – um texto (markdown ou puro) gerado pelo agente Brief2Plan, contendo as seções:  \n   - Resumo Executivo  \n   - Problema Identificado  \n   - Solução Proposta  \n   - Benefícios e Diferenciais  \n   - Caso Similar  \n   - Agendamento (com 3 opções de horário)\n\n---\n\n## 🧱 **Saída Esperada**\n\nVocê deve gerar **dois HTMLs completos**, utilizando os templates fornecidos. Substitua os **placeholders** (ex: `nome_completo`, `resumo_executivo`) pelos valores correspondentes.\n\n### **Template 1: Briefing HTML**  \n```template\n<!-- Página de Briefing (dados brutos) -->\n<div class=\"briefing-container\">\n\n    <h1><i class=\"fas fa-file-alt\"></i> Briefing — Dados Coletados</h1>\n\n    <!-- ===== DADOS DA EMPRESA ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-building\"></i>\n            <h3>Dados da Empresa</h3>\n        </div>\n        <div class=\"info-grid\">\n            <div class=\"info-item\">\n                <span class=\"label\">Nome completo</span>\n                <span class=\"value\">nome_completo</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">E-mail</span>\n                <span class=\"value\">email</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Telefone / WhatsApp</span>\n                <span class=\"value\">telefone</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Empresa</span>\n                <span class=\"value\">empresa</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Cargo</span>\n                <span class=\"value\">cargo</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Website / LinkedIn</span>\n                <span class=\"value\"><a href=\"linkedin\" target=\"_blank\">linkedin</a></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Segmento</span>\n                <span class=\"value\">segmento</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Tamanho da empresa</span>\n                <span class=\"value\">tamanho_empresa</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Localização</span>\n                <span class=\"value\">localizacao</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Faturamento anual</span>\n                <span class=\"value\">faturamento_anual</span>\n            </div>\n        </div>\n    </div>\n\n    <!-- ===== DETALHES DO PROJETO (exemplo Briefing 2 — Técnico) ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-cogs\"></i>\n            <h3>Detalhes do Projeto (WordPress / WooCommerce)</h3>\n        </div>\n        <div class=\"info-grid\">\n            <div class=\"info-item\">\n                <span class=\"label\">Plataforma</span>\n                <span class=\"value\">plataforma</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Principal problema</span>\n                <span class=\"value multi\">\n                    #each problema_principal<span class=\"tag\">this</span>/each\n                </span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">O problema está acontecendo agora?</span>\n                <span class=\"value\">problema_agora</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">URL afetada</span>\n                <span class=\"value\"><a href=\"url_afetada\" target=\"_blank\">url_afetada</a></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Site em produção?</span>\n                <span class=\"value\">site_producao</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Quem mantém o site?</span>\n                <span class=\"value\">mantem_site</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Hospedagem</span>\n                <span class=\"value\">hospedagem_tipo</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Acesso admin</span>\n                <span class=\"value\">acesso_admin</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Acesso hospedagem</span>\n                <span class=\"value\">acesso_hospedagem</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Backups recentes</span>\n                <span class=\"value\">backups_recentes</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Afeta vendas?</span>\n                <span class=\"value\">afeta_vendas</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Mídia (prints, logs)</span>\n                <span class=\"value\"><a href=\"url_midia\" target=\"_blank\">url_midia</a></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Prioridade</span>\n                <span class=\"value\">prioridade</span>\n            </div>\n        </div>\n    </div>\n\n    <!-- ===== COMUNICAÇÃO ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-comments\"></i>\n            <h3>Comunicação</h3>\n        </div>\n        <div class=\"info-grid\">\n            <div class=\"info-item\">\n                <span class=\"label\">Quem aprova intervenções?</span>\n                <span class=\"value\">aprovador</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Melhor horário para manutenção</span>\n                <span class=\"value\">horario_manutencao</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Intervenção em produção?</span>\n                <span class=\"value\">intervencao_producao</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Ambiente staging</span>\n                <span class=\"value\">ambiente_staging</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Canal preferido para atualizações</span>\n                <span class=\"value multi\">\n                    #each canal_atualizacoes<span class=\"tag\">this</span>/each\n                </span>\n            </div>\n        </div>\n    </div>\n\n    <!-- ===== OBSERVAÇÕES ADICIONAIS (se houver) ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-pencil-alt\"></i>\n            <h3>Observações Finais</h3>\n        </div>\n        <div class=\"text-block\">\n            observacoes_finais\n        </div>\n    </div>\n\n</div>\n```\n\n- Use o template HTML do briefing fornecido.\n- Substitua todos os placeholders pelos valores do objeto JSON.\n- Para **arrays** (ex: `problema_principal`, `canal_atualizacoes`), utilize a estrutura `#each ...` para gerar uma lista de tags ou itens, conforme o template (ex: `<span class=\"tag\">this</span>`).\n- Se um campo não existir no JSON, deixe o placeholder vazio (`campo` → `\"\"`) ou exiba \"Não informado\".\n- Mantenha todas as classes CSS, ícones e estrutura HTML exatamente como no template.\n\n### **Template 2: Plano de Ação HTML** \n```template\n<!-- Página de Plano de Ação -->\n<div class=\"plano-container\">\n\n    <h1><i class=\"fas fa-rocket\"></i> Plano de Ação</h1>\n\n    <!-- ===== RESUMO EXECUTIVO ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-star\"></i>\n            <h3>Resumo Executivo</h3>\n        </div>\n        <div class=\"text-block\">\n            resumo_executivo\n        </div>\n    </div>\n\n    <!-- ===== PROBLEMA IDENTIFICADO ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-exclamation-triangle\"></i>\n            <h3>Problema Identificado / Contexto</h3>\n        </div>\n        <div class=\"text-block\">\n            problema_identificado\n        </div>\n    </div>\n\n    <!-- ===== SOLUÇÃO PROPOSTA ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-lightbulb\"></i>\n            <h3>Solução Proposta</h3>\n        </div>\n        <div class=\"text-block\">\n            solucao_proposta\n        </div>\n    </div>\n\n    <!-- ===== BENEFÍCIOS E DIFERENCIAIS ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-chart-line\"></i>\n            <h3>Benefícios e Diferenciais</h3>\n        </div>\n        <div class=\"text-block\">\n            beneficios_diferenciais\n        </div>\n    </div>\n\n    <!-- ===== CASO SIMILAR ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-folder-open\"></i>\n            <h3>Caso Similar</h3>\n        </div>\n        <div class=\"text-block\">\n            caso_similar\n        </div>\n    </div>\n\n    <!-- ===== AGENDAMENTO ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-calendar-alt\"></i>\n            <h3>Agendamento da Reunião de Apresentação</h3>\n        </div>\n        <p style=\"color: var(--dash-text-muted); margin-bottom: var(--dash-spacing-md);\">\n            Selecione uma das opções abaixo para confirmar a reunião:\n        </p>\n        <div class=\"info-grid\" style=\"margin-bottom: var(--dash-spacing-md);\">\n            <div class=\"info-item\">\n                <span class=\"label\">Opção 1</span>\n                <span class=\"value\">data_hora_1</span>\n                <button class=\"btn btn-success btn-sm\" style=\"margin-top: 4px;\">Confirmar reunião</button>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Opção 2</span>\n                <span class=\"value\">data_hora_2</span>\n                <button class=\"btn btn-success btn-sm\" style=\"margin-top: 4px;\">Confirmar reunião</button>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Opção 3</span>\n                <span class=\"value\">data_hora_3</span>\n                <button class=\"btn btn-success btn-sm\" style=\"margin-top: 4px;\">Confirmar reunião</button>\n            </div>\n        </div>\n        <div class=\"btn-group\">\n            <button class=\"btn btn-success\">Aprovar</button>\n            <button class=\"btn btn-warning\">Solicitar Ajustes</button>\n            <button class=\"btn btn-danger\">Recusar</button>\n        </div>\n        <p style=\"font-size: 0.8rem; color: var(--dash-text-muted); margin-top: var(--dash-spacing-md);\">\n            Ao clicar em \"Aprovar\", o plano será considerado aceito. \"Solicitar Ajustes\" abrirá um canal para revisões. \"Recusar\" encerrará o processo.\n        </p>\n    </div>\n\n</div>\n```\n\n- Use o template HTML do plano de ação fornecido.\n- **Extraia as seções** do relatório do plano de ação. O relatório segue um padrão com cabeçalhos (ex: `## Resumo Executivo`, `## Problema Identificado`, etc.). Identifique essas seções e coloque o conteúdo correspondente nos placeholders:\n  - `resumo_executivo` → conteúdo da seção \"Resumo Executivo\"\n  - `problema_identificado` → conteúdo da seção \"Problema Identificado / Contexto\"\n  - `solucao_proposta` → conteúdo da seção \"Solução Proposta\"\n  - `beneficios_diferenciais` → conteúdo da seção \"Benefícios e Diferenciais\"\n  - `caso_similar` → conteúdo da seção \"Caso Similar\"\n  - `data_hora_1`, `data_hora_2`, `data_hora_3` → extraia as três datas/horários mencionados na seção de agendamento (ex: \"Opção 1: terça 10h\", etc.). Se não encontrar, deixe como \"A definir\".\n- Se alguma seção não for encontrada no relatório, deixe o placeholder vazio ou com uma mensagem padrão (\"Não disponível\").\n- **Mantenha os botões** (`Confirmar reunião`, `Aprovar`, etc.) exatamente como estão – eles são apenas UI, não precisam ser funcionais.\n\n---\n\n## 🔍 **Regras de Mapeamento Detalhadas**\n\n### **Briefing HTML – Mapeamento de Campos**\n\n| Placeholder no Template | Campo no JSON (exemplo) |\n|--------------------------|---------------------------|\n| `nome_completo` | `nome-completo` |\n| `email` | `email` |\n| `telefone` | `telefone` |\n| `empresa` | `empresa` |\n| `cargo` | `cargo` |\n| `linkedin` | `linkedin` (use como link) |\n| `segmento` | `segmento` |\n| `tamanho_empresa` | `tamanho-empresa` |\n| `localizacao` | `localizacao` |\n| `faturamento_anual` | `faturamento-anual` |\n| `plataforma` | `plataforma` (se existir) |\n| `problema_principal` | `problema-principal` (array) |\n| `problema_agora` | `problema-agora` |\n| `url_afetada` | `url-afetada` |\n| `site_producao` | `site-producao` |\n| `mantem_site` | `mantem-site` |\n| `hospedagem_tipo` | `hospedagem-tipo` |\n| `acesso_admin` | `acesso-admin` |\n| `acesso_hospedagem` | `acesso-hospedagem` |\n| `backups_recentes` | `backups-recentes` |\n| `afeta_vendas` | `afeta-vendas` |\n| `url_midia` | `url-midia` |\n| `prioridade` | `prioridade` |\n| `aprovador` | `aprovador` |\n| `horario_manutencao` | `horario-manutencao` |\n| `intervencao_producao` | `intervencao-producao` |\n| `ambiente_staging` | `ambiente-staging` |\n| `canal_atualizacoes` | `canal-atualizacoes` (array) |\n| `observacoes_finais` | `observacoes-finais` |\n\n**Para arrays** (como `problema_principal`, `canal_atualizacoes`), utilize a sintaxe:\n```html\n#each problema_principal<span class=\"tag\">this</span>/each\n```\n\n### **Plano de Ação – Extração de Seções do Relatório**\n\n- O relatório gerado pelo Brief2Plan segue uma estrutura com cabeçalhos markdown (`##`) ou títulos em negrito.\n- **Identifique as seções** por palavras‑chave:\n  - `Resumo Executivo` → `resumo_executivo`\n  - `Problema Identificado` ou `Contexto` → `problema_identificado`\n  - `Solução Proposta` → `solucao_proposta`\n  - `Benefícios`, `Diferenciais` ou `Valor` → `beneficios_diferenciais`\n  - `Caso Similar` ou `Case` → `caso_similar`\n  - `Agendamento` → extraia as 3 datas/horários (procure por padrões como \"Opção 1:\", \"terça 10h\", etc.)\n\n- Se uma seção não for encontrada, insira um texto padrão como *\"Não informado\"*.\n\n- **Para as datas**, capture os três horários sugeridos e coloque nos placeholders:\n  - `data_hora_1`, `data_hora_2`, `data_hora_3`\n\n---\n\n## 🧹 **Tratamento de Campos Ausentes**\n\n- Se um campo não existir no JSON ou estiver vazio, deixe o placeholder vazio (`\"\"`) ou exiba um traço (`—`).\n- Se uma seção do relatório não for encontrada, preencha com *\"Seção não disponível no relatório\"*.\n\n---\n\n## 📦 **Formato de Saída**\n\nSua resposta deve ser um **objeto JSON** com duas chaves:\n\n```json\n{\n  \"briefing_html\": \"... (código HTML completo do briefing) ...\",\n  \"plano_html\": \"... (código HTML completo do plano de ação) ...\"\n}\n```\n\n- Ambos os HTMLs devem ser **strings** (escapadas ou literais) dentro do JSON.\n- Mantenha a formatação e indentação para legibilidade.\n\n---\n\n## ⚠️ **Restrições Importantes**\n\n- **Não modifique** as classes CSS, IDs, ícones ou estrutura dos templates HTML. Apenas substitua os placeholders.\n- **Não adicione** scripts ou funcionalidades extras – os botões são puramente visuais.\n- **Não invente** dados – use apenas o que está nos inputs.\n- Se o `briefing-type` for diferente, adapte os campos: para \"Operação Comercial\" use os campos específicos (ex: `leads-origem`, `perda-motivos`), para \"Automação\" use `problema-resolver`, etc. Mas como o template é genérico, você pode tentar mapear campos com nomes similares. Priorize os campos que existem no template.\n\n---\n\n## 🚀 **Exemplo de Execução**\n\n**Input (resumido):**\n```json\n// briefing_data\n{\n  \"nome-completo\": \"João Silva\",\n  \"email\": \"joao@email.com\",\n  \"problema_principal\": [\"Erro no checkout\", \"Lentidão\"],\n  \"observacoes_finais\": \"Cliente precisa de urgência.\"\n}\n\n// relatório (texto)\n\"## Resumo Executivo\\nO cliente enfrenta problemas críticos...\\n## Problema Identificado\\n...\\n## Solução Proposta\\n...\\n## Benefícios e Diferenciais\\n...\\n## Caso Similar\\n...\\n## Agendamento\\nOpção 1: terça 10h\\nOpção 2: quarta 14h\\nOpção 3: quinta 16h\"\n```\n\n**Output:**\n```json\n{\n  \"briefing_html\": \"<div class='briefing-container'>...<span class='tag'>Erro no checkout</span><span class='tag'>Lentidão</span>...</div>\",\n  \"plano_html\": \"<div class='plano-container'>...<div class='text-block'>O cliente enfrenta problemas críticos...</div>...<span class='value'>terça 10h</span>...</div>\"\n}\n```\n\n---\n\n## ✅ **Checklist de Qualidade**\n\n- [ ] Todos os placeholders do briefing foram substituídos.\n- [ ] Arrays foram iterados corretamente (`#each`).\n- [ ] Seções do relatório foram extraídas e colocadas nos cards certos.\n- [ ] Três opções de horário foram capturadas.\n- [ ] HTMLs são válidos e bem formatados.\n- [ ] Estrutura e classes dos templates foram preservadas.\n- [ ] Campos ausentes foram tratados com valores padrão.",
+              "role": "system"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        400,
+        0
+      ],
+      "id": "8a4b79e7-9816-4523-aa98-5076e6934a7d",
+      "name": "Relatório Website",
+      "credentials": {
+        "openAiApi": {
+          "id": "FPvqDxTQ8K9jjUHg",
+          "name": "CyberReport APIKEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Edit Fields').item.json.urlBase }}wp-json/wp/v2/briefing",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"title\": \"{{ $('When Executed by Another Workflow').item.json.briefingTitle }}\",\n  \"content\": {{ $json.choices[0].message.content.briefing_html.toJsonString() }},\n  \"status\": \"draft\",\n  \"author\": 2\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "c6b25236-93f1-4f57-ac3c-4c4b9390de31",
+      "name": "Create Briefing",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "2clwxbVPBsvnC4H9",
+          "name": "WhoWorks Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Edit Fields').item.json.urlBase }}wp-json/flowkit/v1/action-plans",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"title\": \"{{ $('When Executed by Another Workflow').item.json.actionPlanTitle }}\",\n  \"content\": {{ $('Relatório Website').item.json.choices[0].message.content.plano_html.toJsonString() }},\n  \"case_id\": {{ $json.id }},\n  \"customer_id\": {{ $('When Executed by Another Workflow').item.json.user_id }},\n  \"lead_email\": \"{{ $('When Executed by Another Workflow').item.json.user_mail }}\",\n  \"lead_name\": \"{{ $('When Executed by Another Workflow').item.json.user_name }}\",\n  \"briefing_id\": {{ $('Create Briefing').item.json.id }},\n  \"suggested_dates\": [\n      {\n        \"id\": \"slot-1\",\n        \"starts_at\": \"2026-07-29T14:00:00-03:00\",\n        \"ends_at\": \"2026-07-29T15:00:00-03:00\",\n        \"timezone\": \"America/Sao_Paulo\",\n        \"label\": \"29/07/2026 às 14:00\"\n      },\n      {\n        \"id\": \"slot-2\",\n        \"starts_at\": \"2026-07-30T10:00:00-03:00\",\n        \"ends_at\": \"2026-07-30T11:00:00-03:00\",\n        \"timezone\": \"America/Sao_Paulo\",\n        \"label\": \"30/07/2026 às 10:00\"\n      },\n      {\n        \"id\": \"slot-3\",\n        \"starts_at\": \"2026-07-31T16:00:00-03:00\",\n        \"ends_at\": \"2026-07-31T17:00:00-03:00\",\n        \"timezone\": \"America/Sao_Paulo\",\n        \"label\": \"31/07/2026 às 16:00\"\n      }\n    ],\n    \"source\": \"n8n\",\n    \"source_payload_hash\": \"test-payload-hash-001\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1376,
+        0
+      ],
+      "id": "c536c7e3-5db1-448a-936a-af1c7dc65679",
+      "name": "Create Action Plan",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "2clwxbVPBsvnC4H9",
+          "name": "WhoWorks Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Edit Fields').item.json.urlBase }}wp-json/flowkit/v1/cases",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"title\": \"Caso - Lead Exemplo\",\n  \"customer_id\": {{ $('When Executed by Another Workflow').item.json.user_id }},\n  \"lead_email\": \"lead@example.com\",\n  \"lead_name\": \"Lead Exemplo\",\n  \"origin_briefing_id\": {{ $json.id }},\n  \"status\": \"qualified\",\n  \"created_by_source\": \"n8n\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "15e6a2c1-8560-4b4a-a800-f6bd00d0ebd4",
+      "name": "Create Case",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "2clwxbVPBsvnC4H9",
+          "name": "WhoWorks Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e067655f-7e20-4115-bb23-7c1be069b751",
+              "name": "urlBase",
+              "value": "={{ $json.environment = 'produção' ? 'https://whoworks.com.br/' : 'https://sandbox.whoworks.com.br/' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        0
+      ],
+      "id": "9a1639e5-1f9e-4272-adec-a730dfd35dcb",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "briefingTitle": "Briefing: Automação, Integrações e Desenvolvimento - Empresa xyz",
+          "briefingContent": "{\"nome-completo\":\"Rômulo da costa\",\"email\":\"romulao@meusite.com.br\",\"telefone\":\"912391239012\",\"empresa\":\"Empresa xyz\",\"cargo\":\"CTO\",\"linkedin\":\"https://meusite.com.br\",\"segmento\":\"Indústria\",\"tamanho-empresa\":\"1–10 funcionários\",\"localizacao\":\"Joinvile, SC\",\"faturamento-anual\":\"Até R$ 100 mil\",\"problema-resolver\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam rutrum fringilla. Curabitur sollicitudin porttitor arcu tempor vehicula. Nunc turpis tortor, aliquet eget dolor et, ornare finibus diam. Sed ut diam scelerisque, elementum elit in, aliquet mauris. Phasellus in diam et sapien gravida volutpat suscipit eu nisi. Nullam consequat mauris elit. Quisque vitae odio libero. Etiam ultrices arcu sit amet cursus consequat. Cras vel orci porttitor, tristique justo id, feugiat nisl.\",\"onde-acontece\":[\"Site\",\"WordPress\",\"WooCommerce\",\"WhatsApp\"],\"sistemas-envolvidos\":[\"WordPress\",\"WooCommerce\",\"Google Sheets\",\"Notion\",\"Trello\",\"HubSpot\",\"Pipedrive\",\"RD Station\",\"Asaas\",\"Stripe\",\"Pagar.me\",\"Mercado Pago\",\"ERP\",\"CRM\"],\"outros-sistemas\":\"Sistema x, sistema y\",\"processo-manual\":\"Parcialmente manual\",\"passo-a-passo\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam rutrum fringilla. Curabitur sollicitudin porttitor arcu tempor vehicula. Nunc turpis tortor, aliquet eget dolor et, ornare finibus diam. Sed ut diam scelerisque, elementum elit in, aliquet mauris. Phasellus in diam et sapien gravida volutpat suscipit eu nisi. Nullam consequat mauris elit. Quisque vitae odio libero. Etiam ultrices arcu sit amet cursus consequat. Cras vel orci porttitor, tristique justo id, feugiat nisl.\",\"automatico-esperado\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam rutrum fringilla. Curabitur sollicitudin porttitor arcu tempor vehicula. Nunc turpis tortor, aliquet eget dolor et, ornare finibus diam. Sed ut diam scelerisque, elementum elit in, aliquet mauris. Phasellus in diam et sapien gravida volutpat suscipit eu nisi. Nullam consequat mauris elit. Quisque vitae odio libero. Etiam ultrices arcu sit amet cursus consequat. Cras vel orci porttitor, tristique justo id, feugiat nisl.\",\"quem-executa\":\"João da silva\",\"frequencia\":\"2‑3 vezes por semana\",\"regras-excecoes\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam rutrum fringilla. Curabitur sollicitudin porttitor arcu tempor vehicula. Nunc turpis tortor, aliquet eget dolor et, ornare finibus diam. Sed ut diam scelerisque, elementum elit in, aliquet mauris. Phasellus in diam et sapien gravida volutpat suscipit eu nisi. Nullam consequat mauris elit. Quisque vitae odio libero. Etiam ultrices arcu sit amet cursus consequat. Cras vel orci porttitor, tristique justo id, feugiat nisl.\",\"api-documentacao\":\"Sim, documentação pública\",\"usa-ferramenta\":\"Sim, n8n\",\"interface-visual\":\"Sim, painel administrativo\",\"impacto-esperado\":[\"Reduzir trabalho manual\",\"Evitar erro humano\",\"Responder leads mais rápido\",\"Centralizar informações\",\"Integrar vendas e financeiro\"],\"feature-sistema\":\"WordPress\",\"feature-usuarios\":[\"Editores\",\"Clientes\"],\"feature-referencia\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam rutrum fringilla. Curabitur sollicitudin porttitor arcu tempor vehicula. Nunc turpis tortor, aliquet eget dolor et, ornare finibus diam. Sed ut diam scelerisque, elementum elit in, aliquet mauris. Phasellus in diam et sapien gravida volutpat suscipit eu nisi. Nullam consequat mauris elit. Quisque vitae odio libero. Etiam ultrices arcu sit amet cursus consequat. Cras vel orci porttitor, tristique justo id, feugiat nisl.\",\"feature-painel\":\"Sim\",\"feature-banco\":\"Sim\",\"feature-relatorios\":\"Sim\",\"feature-integracao\":\"Sim\",\"feature-permissoes\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam rutrum fringilla. Curabitur sollicitudin porttitor arcu tempor vehicula. Nunc turpis tortor, aliquet eget dolor et, ornare finibus diam. Sed ut diam scelerisque, elementum elit in, aliquet mauris. Phasellus in diam et sapien gravida volutpat suscipit eu nisi. Nullam consequat mauris elit. Quisque vitae odio libero. Etiam ultrices arcu sit amet cursus consequat. Cras vel orci porttitor, tristique justo id, feugiat nisl.\",\"integracao-origem\":\"Woocommerce\",\"integracao-destino\":\"CRm\",\"integracao-dados\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam rutrum fringilla. Curabitur sollicitudin porttitor arcu tempor vehicula. Nunc turpis tortor, aliquet eget dolor et, ornare finibus diam. Sed ut diam scelerisque, elementum elit in, aliquet mauris. Phasellus in diam et sapien gravida volutpat suscipit eu nisi. Nullam consequat mauris elit. Quisque vitae odio libero. Etiam ultrices arcu sit amet cursus consequat. Cras vel orci porttitor, tristique justo id, feugiat nisl.\",\"integracao-tempo\":\"Agendada (batch)\",\"integracao-erro\":\"Registrar e continuar\",\"integracao-sandbox\":\"Não sei\",\"integracao-api-doc\":\"https://doc.meusite.com.br\",\"integracao-auth\":\"JWT\",\"ia-tarefa\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam rutrum fringilla. Curabitur sollicitudin porttitor arcu tempor vehicula. Nunc turpis tortor, aliquet eget dolor et, ornare finibus diam. Sed ut diam scelerisque, elementum elit in, aliquet mauris. Phasellus in diam et sapien gravida volutpat suscipit eu nisi. Nullam consequat mauris elit. Quisque vitae odio libero. Etiam ultrices arcu sit amet cursus consequat. Cras vel orci porttitor, tristique justo id, feugiat nisl.\",\"ia-uso\":\"Atender clientes diretamente\",\"ia-fontes\":[\"Base de conhecimento\",\"Histórico de conversas\",\"Catálogo de produtos\",\"Documentação interna\"],\"ia-memoria\":\"Sim, por conversa\",\"ia-acionar-humano\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam rutrum fringilla. Curabitur sollicitudin porttitor arcu tempor vehicula. Nunc turpis tortor, aliquet eget dolor et, ornare finibus diam. Sed ut diam scelerisque, elementum elit in, aliquet mauris. Phasellus in diam et sapien gravida volutpat suscipit eu nisi. Nullam consequat mauris elit. Quisque vitae odio libero. Etiam ultrices arcu sit amet cursus consequat. Cras vel orci porttitor, tristique justo id, feugiat nisl.\",\"ia-restricoes\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam rutrum fringilla. Curabitur sollicitudin porttitor arcu tempor vehicula. Nunc turpis tortor, aliquet eget dolor et, ornare finibus diam. Sed ut diam scelerisque, elementum elit in, aliquet mauris. Phasellus in diam et sapien gravida volutpat suscipit eu nisi. Nullam consequat mauris elit. Quisque vitae odio libero. Etiam ultrices arcu sit amet cursus consequat. Cras vel orci porttitor, tristique justo id, feugiat nisl.\",\"conhecedor-processo\":\"contato@meusite.com.br\",\"aprovador-escopo\":\"Adriano\",\"canal-duvidas\":[\"E‑mail\",\"WhatsApp\",\"Telefone\",\"Slack\",\"Teams\",\"Reunião\"],\"reuniao-tecnica\":\"Sim, com a equipe técnica\",\"disponibilidade-reuniao\":\"Segunda feira\",\"observacoes-finais\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam rutrum fringilla. Curabitur sollicitudin porttitor arcu tempor vehicula. Nunc turpis tortor, aliquet eget dolor et, ornare finibus diam. Sed ut diam scelerisque, elementum elit in, aliquet mauris. Phasellus in diam et sapien gravida volutpat suscipit eu nisi. Nullam consequat mauris elit. Quisque vitae odio libero. Etiam ultrices arcu sit amet cursus consequat. Cras vel orci porttitor, tristique justo id, feugiat nisl.\",\"agendar-reuniao\":\"Sim, prefiro horário flexível\",\"consent-term\":\"1\",\"briefing-type\":\"Automação, Integrações e Desenvolvimento\",\"lead-id\":\"46\"}",
+          "actionPlanTitle": "Plano de Ação: Automação, Integrações e Desenvolvimento - Empresa xyz",
+          "actionPlanContent": "## RESUMO EXECUTIVO\n\nO cliente Rômulo da Costa, CTO da Empresa xyz (segmento Indústria, até 10 funcionários, faturamento anual até R$ 100 mil), busca automação, integrações e desenvolvimento para otimizar processos atuais que são parcialmente manuais, envolvendo WordPress, WooCommerce, WhatsApp e CRM. O objetivo é reduzir trabalho manual, evitar erros, acelerar respostas a leads, centralizar informações e integrar vendas com financeiro, utilizando automação via n8n e APIs com autenticação JWT.\n\n---\n\n## ANÁLISE DO CONTEXTO\n\nA Empresa xyz está no estágio inicial de maturidade digital, com processos ainda parcialmente manuais integrando sistemas diversos (WP, WooCommerce, Google Sheets, Notion, Trello, HubSpot, RD Station, sistemas de pagamento e ERP). A necessidade demanda automação customizada, integração batch agendada para sincronizar dados do Woocommerce para CRM, painel administrativo para gestão de usuários (editores e clientes), com registro e tratamento automático de erros, e uso de IA para atendimento. O cliente valoriza também o controle de permissões e relatórios gerenciais para análise.\n\n---\n\n## PROPOSTA DE SOLUÇÃO TÉCNICA\n\n## ⚙️ AUTOMAÇÃO, INTEGRAÇÃO E DESENVOLVIMENTO\n\n### 📌 CONTEXTO ATUAL\n\nProcessos ainda parcialmente manuais envolvendo Woocommerce (origem), CRM (destino) e múltiplas ferramentas auxiliares, dificultando a coordenação e gerando retrabalho e erros.\n\n### 🎯 SOLUÇÃO PROPOSTA\n\n1. **Levantamento de requisitos** (3-5 dias)\n   - Mapeamento detalhado do passo a passo atual (fornecido parcialmente)\n   - Definição clara do fluxo batch agendado para dados entre Woocommerce e CRM\n   - Estudo do uso de autenticação JWT e tratamento de erros via registro e continuidade\n   - Revisão da documentação pública da API (https://doc.meusite.com.br)\n2. **Desenvolvimento e integração** (4-6 semanas)\n   - Implementar automação via n8n para integração batch dos dados da loja WooCommerce para CRM\n   - Desenvolvimento de painel administrativo customizado para controle de usuários e relatórios\n   - Criação de fluxos para acionamento e fallback da IA nas interações clientelares conforme restrições e memória por conversa\n   - Validação das regras de exceções fornecidas, controle de permissões e logs detalhados\n3. **Testes e implantação** (1-2 semanas)\n   - Testes end-to-end incluindo exceções, falhas e casar fluxo com equipe João da Silva (executor interno)\n   - Treinamento técnico em reunião com equipe (reunião técnica agendada conforme preferência flexível do cliente)\n   - Documentação e suporte à implantação\n\n---\n\n## ANÁLISE DE VIABILIDADE\n\n- Orçamento estimado: Médio\n- A solução atende à necessidade de eliminar retrabalhos atuais, mitigando risco de erros manuais e melhorando dinâmica de vendas e financeiro.\n- Aproveitamento da infraestrutura já existente (WordPress, WooCommerce, n8n).\n- Integração com APIs públicas e sistemas parceiros plenamente suportada.\n\n---\n\n## ABORDAGEM DE IMPLEMENTAÇÃO\n\n- Uso de metodologias ágeis para entregar rapidamente POCs e implementar ajustes.\n- Parceria próxima com CTO e equipe técnica para assegurar aderência técnica.\n- Garantia de funcionamento fora do horário comercial para minimizar impacto.\n\n---\n\n## INTEGRAÇÕES E DEPENDÊNCIAS\n\n- WooCommerce (origem dos dados)\n- CRM destino (integração agendada/batch)\n- n8n para orquestração das automações\n- API pública com autenticação JWT\n- Sistemas auxiliares: Google Sheets, Notion, Trello, Asaas e gateways de pagamento (Stripe, Pagar.me, Mercado Pago), ERP e múltiplas ferramentas de CRM/Marketing (HubSpot, Pipedrive, RD Station)\n\n---\n\n## RISCOS TÉCNICOS\n\n- Dependência da estabilidade da API pública do cliente\n- Complexidade na definição e tratamento das regras de exceção e memória de IA nas conversas\n- Necessidade de monitoramento e registro rigoroso dos logs para evitar perda de dados no fluxo batch\n\n---\n\n## MÉTRICAS DE SUCESSO\n\n- Redução de trabalho manual estimada em pelo menos 15 h/mês (equivale a R$ 1.800/mês economizados)\n- Diminuição dos erros humanos em processos críticos (expectativa qualitativa de redução > 70%)\n- Redução do tempo de resposta a leads > 40%\n- Centralização e visibilidade completa via painel\n- Integração efetiva das vendas com financeiro e CRM\n\n---\n\n## RECOMENDAÇÕES E ALTERNATIVAS\n\n- Iniciar com fluxo batch mais simples e expandir para integrações em tempo real conforme maturidade\n- Avaliar uso futuro de IA para automação mais avançada, incluindo análise preditiva do comportamento dos clientes\n- Documentar e treinar equipe interna para operação autônoma das integrações pela ferramenta n8n\n\n---\n\n## CASOS SIMILARES APLICÁVEIS\n\n- Projeto com empresa do setor industrial que integrava WooCommerce e ERP via automação batch, resultando em redução do tempo de processamento de pedidos de 2 horas para 10 minutos e diminuição dos erros em 75%. Investimento recuperado em 3 meses via economia operacional.\n- Integração de sistemas diversos com uso intensivo de n8n em empresa de pequeno porte, garantindo automação de fluxos de atendimento e faturamento com painel administrativo, obtendo aumento de 30% na velocidade de resposta a clientes.\n\n---\n\n## ROADMAP SUGERIDO\n\n| Fase                     | Atividades Principais                | Duração Estimada    |\n|--------------------------|------------------------------------|--------------------|\n| 1. Levantamento          | Workshop, mapeamento, documentação | 3-5 dias           |\n| 2. Desenvolvimento       | Integrações, automações, painel    | 4-6 semanas        |\n| 3. Testes e validação    | Testes, correções, treinamento     | 1-2 semanas        |\n| 4. Implantação final     | Deploy, acompanhamento inicial     | 1 semana           |\n\n---\n\n## PRÓXIMOS PASSOS RECOMENDADOS\n\n1. Agendar reunião técnica flexível para detalhar fluxo e alinhar expectativas (preferência sugerida: próxima segunda-feira 20/07, horário a definir)\n2. Confirmar escopo com aprovador Adriano\n3. Apresentar proposta comercial formal com cronograma e investimento detalhado\n4. Iniciar levantamento detalhado em conjunto com responsável João da Silva\n\n---\n\n## PONTOS PARA ESCLARECIMENTO\n\n- Detalhar regras e exceções mencionadas para tratar no fluxo.\n- Confirmar volume de dados e frequência exata do batch esperado.\n- Esclarecer limitações ou restrições específicas da API pública.\n- Detalhar critérios para ativação e acionamento da IA e fallback para atendimento humano.\n- Confirmar uso e expectativas do painel administrativo e relatórios.\n\n---\n\n_Atenciosamente,  \nEquipe WhoWorks  \nEspecialistas em Automação e Integração para Indústrias digitais_",
+          "user_id": 3,
+          "user_mail": "romulao@meusite.com.br",
+          "user_name": "Rômulo da costa",
+          "environment": "https://whoworks.com.br/"
+        }
+      }
+    ],
+    "Relatório Website": [
+      {
+        "json": {
+          "id": "chatcmpl-E2kTOmYColriNotdGgfA8fpILZcui",
+          "object": "chat.completion",
+          "created": 1784324006,
+          "model": "gpt-4.1-2025-04-14",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": {
+                  "briefing_html": "<div class=\"briefing-container\">\n\n    <h1><i class=\"fas fa-file-alt\"></i> Briefing — Dados Coletados</h1>\n\n    <!-- ===== DADOS DA EMPRESA ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-building\"></i>\n            <h3>Dados da Empresa</h3>\n        </div>\n        <div class=\"info-grid\">\n            <div class=\"info-item\">\n                <span class=\"label\">Nome completo</span>\n                <span class=\"value\">Rômulo da costa</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">E-mail</span>\n                <span class=\"value\">romulao@meusite.com.br</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Telefone / WhatsApp</span>\n                <span class=\"value\">912391239012</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Empresa</span>\n                <span class=\"value\">Empresa xyz</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Cargo</span>\n                <span class=\"value\">CTO</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Website / LinkedIn</span>\n                <span class=\"value\"><a href=\"https://meusite.com.br\" target=\"_blank\">https://meusite.com.br</a></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Segmento</span>\n                <span class=\"value\">Indústria</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Tamanho da empresa</span>\n                <span class=\"value\">1–10 funcionários</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Localização</span>\n                <span class=\"value\">Joinvile, SC</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Faturamento anual</span>\n                <span class=\"value\">Até R$ 100 mil</span>\n            </div>\n        </div>\n    </div>\n\n    <!-- ===== DETALHES DO PROJETO (exemplo Briefing 2 — Técnico) ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-cogs\"></i>\n            <h3>Detalhes do Projeto (WordPress / WooCommerce)</h3>\n        </div>\n        <div class=\"info-grid\">\n            <div class=\"info-item\">\n                <span class=\"label\">Plataforma</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Principal problema</span>\n                <span class=\"value multi\">\n                    \n                </span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">O problema está acontecendo agora?</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">URL afetada</span>\n                <span class=\"value\"><a href=\"\" target=\"_blank\"></a></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Site em produção?</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Quem mantém o site?</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Hospedagem</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Acesso admin</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Acesso hospedagem</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Backups recentes</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Afeta vendas?</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Mídia (prints, logs)</span>\n                <span class=\"value\"><a href=\"\" target=\"_blank\"></a></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Prioridade</span>\n                <span class=\"value\"></span>\n            </div>\n        </div>\n    </div>\n\n    <!-- ===== COMUNICAÇÃO ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-comments\"></i>\n            <h3>Comunicação</h3>\n        </div>\n        <div class=\"info-grid\">\n            <div class=\"info-item\">\n                <span class=\"label\">Quem aprova intervenções?</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Melhor horário para manutenção</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Intervenção em produção?</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Ambiente staging</span>\n                <span class=\"value\"></span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Canal preferido para atualizações</span>\n                <span class=\"value multi\">\n                    \n                </span>\n            </div>\n        </div>\n    </div>\n\n    <!-- ===== OBSERVAÇÕES ADICIONAIS (se houver) ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-pencil-alt\"></i>\n            <h3>Observações Finais</h3>\n        </div>\n        <div class=\"text-block\">\n            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam rutrum fringilla. Curabitur sollicitudin porttitor arcu tempor vehicula. Nunc turpis tortor, aliquet eget dolor et, ornare finibus diam. Sed ut diam scelerisque, elementum elit in, aliquet mauris. Phasellus in diam et sapien gravida volutpat suscipit eu nisi. Nullam consequat mauris elit. Quisque vitae odio libero. Etiam ultrices arcu sit amet cursus consequat. Cras vel orci porttitor, tristique justo id, feugiat nisl.\n        </div>\n    </div>\n\n</div>",
+                  "plano_html": "<div class=\"plano-container\">\n\n    <h1><i class=\"fas fa-rocket\"></i> Plano de Ação</h1>\n\n    <!-- ===== RESUMO EXECUTIVO ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-star\"></i>\n            <h3>Resumo Executivo</h3>\n        </div>\n        <div class=\"text-block\">\n            O cliente Rômulo da Costa, CTO da Empresa xyz (segmento Indústria, até 10 funcionários, faturamento anual até R$ 100 mil), busca automação, integrações e desenvolvimento para otimizar processos atuais que são parcialmente manuais, envolvendo WordPress, WooCommerce, WhatsApp e CRM. O objetivo é reduzir trabalho manual, evitar erros, acelerar respostas a leads, centralizar informações e integrar vendas com financeiro, utilizando automação via n8n e APIs com autenticação JWT.\n        </div>\n    </div>\n\n    <!-- ===== PROBLEMA IDENTIFICADO ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-exclamation-triangle\"></i>\n            <h3>Problema Identificado / Contexto</h3>\n        </div>\n        <div class=\"text-block\">\n            A Empresa xyz está no estágio inicial de maturidade digital, com processos ainda parcialmente manuais integrando sistemas diversos (WP, WooCommerce, Google Sheets, Notion, Trello, HubSpot, RD Station, sistemas de pagamento e ERP). A necessidade demanda automação customizada, integração batch agendada para sincronizar dados do Woocommerce para CRM, painel administrativo para gestão de usuários (editores e clientes), com registro e tratamento automático de erros, e uso de IA para atendimento. O cliente valoriza também o controle de permissões e relatórios gerenciais para análise.\n        </div>\n    </div>\n\n    <!-- ===== SOLUÇÃO PROPOSTA ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-lightbulb\"></i>\n            <h3>Solução Proposta</h3>\n        </div>\n        <div class=\"text-block\">\n            <h3>⚙️ AUTOMAÇÃO, INTEGRAÇÃO E DESENVOLVIMENTO</h3>\n\n<h4>📌 CONTEXTO ATUAL</h4>\n\nProcessos ainda parcialmente manuais envolvendo Woocommerce (origem), CRM (destino) e múltiplas ferramentas auxiliares, dificultando a coordenação e gerando retrabalho e erros.\n\n<h4>🎯 SOLUÇÃO PROPOSTA</h4>\n\n1. <b>Levantamento de requisitos</b> (3-5 dias)\n   - Mapeamento detalhado do passo a passo atual (fornecido parcialmente)\n   - Definição clara do fluxo batch agendado para dados entre Woocommerce e CRM\n   - Estudo do uso de autenticação JWT e tratamento de erros via registro e continuidade\n   - Revisão da documentação pública da API (https://doc.meusite.com.br)\n2. <b>Desenvolvimento e integração</b> (4-6 semanas)\n   - Implementar automação via n8n para integração batch dos dados da loja WooCommerce para CRM\n   - Desenvolvimento de painel administrativo customizado para controle de usuários e relatórios\n   - Criação de fluxos para acionamento e fallback da IA nas interações clientelares conforme restrições e memória por conversa\n   - Validação das regras de exceções fornecidas, controle de permissões e logs detalhados\n3. <b>Testes e implantação</b> (1-2 semanas)\n   - Testes end-to-end incluindo exceções, falhas e casar fluxo com equipe João da Silva (executor interno)\n   - Treinamento técnico em reunião com equipe (reunião técnica agendada conforme preferência flexível do cliente)\n   - Documentação e suporte à implantação\n\n<h4>ANÁLISE DE VIABILIDADE</h4>\n\n- Orçamento estimado: Médio\n- A solução atende à necessidade de eliminar retrabalhos atuais, mitigando risco de erros manuais e melhorando dinâmica de vendas e financeiro.\n- Aproveitamento da infraestrutura já existente (WordPress, WooCommerce, n8n).\n- Integração com APIs públicas e sistemas parceiros plenamente suportada.\n\n<h4>ABORDAGEM DE IMPLEMENTAÇÃO</h4>\n\n- Uso de metodologias ágeis para entregar rapidamente POCs e implementar ajustes.\n- Parceria próxima com CTO e equipe técnica para assegurar aderência técnica.\n- Garantia de funcionamento fora do horário comercial para minimizar impacto.\n\n<h4>INTEGRAÇÕES E DEPENDÊNCIAS</h4>\n\n- WooCommerce (origem dos dados)\n- CRM destino (integração agendada/batch)\n- n8n para orquestração das automações\n- API pública com autenticação JWT\n- Sistemas auxiliares: Google Sheets, Notion, Trello, Asaas e gateways de pagamento (Stripe, Pagar.me, Mercado Pago), ERP e múltiplas ferramentas de CRM/Marketing (HubSpot, Pipedrive, RD Station)\n\n<h4>RISCOS TÉCNICOS</h4>\n\n- Dependência da estabilidade da API pública do cliente\n- Complexidade na definição e tratamento das regras de exceção e memória de IA nas conversas\n- Necessidade de monitoramento e registro rigoroso dos logs para evitar perda de dados no fluxo batch\n\n<h4>MÉTRICAS DE SUCESSO</h4>\n\n- Redução de trabalho manual estimada em pelo menos 15 h/mês (equivale a R$ 1.800/mês economizados)\n- Diminuição dos erros humanos em processos críticos (expectativa qualitativa de redução > 70%)\n- Redução do tempo de resposta a leads > 40%\n- Centralização e visibilidade completa via painel\n- Integração efetiva das vendas com financeiro e CRM\n\n<h4>RECOMENDAÇÕES E ALTERNATIVAS</h4>\n\n- Iniciar com fluxo batch mais simples e expandir para integrações em tempo real conforme maturidade\n- Avaliar uso futuro de IA para automação mais avançada, incluindo análise preditiva do comportamento dos clientes\n- Documentar e treinar equipe interna para operação autônoma das integrações pela ferramenta n8n\n\n<h4>CASOS SIMILARES APLICÁVEIS</h4>\n\n- Projeto com empresa do setor industrial que integrava WooCommerce e ERP via automação batch, resultando em redução do tempo de processamento de pedidos de 2 horas para 10 minutos e diminuição dos erros em 75%. Investimento recuperado em 3 meses via economia operacional.\n- Integração de sistemas diversos com uso intensivo de n8n em empresa de pequeno porte, garantindo automação de fluxos de atendimento e faturamento com painel administrativo, obtendo aumento de 30% na velocidade de resposta a clientes.\n\n<h4>ROADMAP SUGERIDO</h4>\n\n<table style=\"width:100%;border-collapse:collapse;\">\n<thead>\n<tr>\n<th style=\"border:1px solid #eee;padding:4px;\">Fase</th>\n<th style=\"border:1px solid #eee;padding:4px;\">Atividades Principais</th>\n<th style=\"border:1px solid #eee;padding:4px;\">Duração Estimada</th></tr></thead>\n<tbody>\n<tr><td style=\"border:1px solid #eee;padding:4px;\">1. Levantamento</td><td style=\"border:1px solid #eee;padding:4px;\">Workshop, mapeamento, documentação</td><td style=\"border:1px solid #eee;padding:4px;\">3-5 dias</td></tr>\n<tr><td style=\"border:1px solid #eee;padding:4px;\">2. Desenvolvimento</td><td style=\"border:1px solid #eee;padding:4px;\">Integrações, automações, painel</td><td style=\"border:1px solid #eee;padding:4px;\">4-6 semanas</td></tr>\n<tr><td style=\"border:1px solid #eee;padding:4px;\">3. Testes e validação</td><td style=\"border:1px solid #eee;padding:4px;\">Testes, correções, treinamento</td><td style=\"border:1px solid #eee;padding:4px;\">1-2 semanas</td></tr>\n<tr><td style=\"border:1px solid #eee;padding:4px;\">4. Implantação final</td><td style=\"border:1px solid #eee;padding:4px;\">Deploy, acompanhamento inicial</td><td style=\"border:1px solid #eee;padding:4px;\">1 semana</td></tr>\n</tbody>\n</table>\n\n        </div>\n    </div>\n\n    <!-- ===== BENEFÍCIOS E DIFERENCIAIS ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-chart-line\"></i>\n            <h3>Benefícios e Diferenciais</h3>\n        </div>\n        <div class=\"text-block\">\n            • Reduz trabalho manual em pelo menos 15 horas/mês (estimativa de economia de R$ 1.800/mês)<br>\n• Diminui riscos de erro humano (&gt; 70% de redução esperada nos principais processos)<br>\n• Acelera o tempo de resposta a leads (&gt; 40% de redução do tempo)<br>\n• Centraliza dados e gestão em painel administrativo exclusivo<br>\n• Orquestra integrações complexas entre vendas, financeiro e atendimento via IA<br>\n• Desenvolvimento escalável com possibilidade de ampliar IA, integrações e relatórios avançados no futuro\n        </div>\n    </div>\n\n    <!-- ===== CASO SIMILAR ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-folder-open\"></i>\n            <h3>Caso Similar</h3>\n        </div>\n        <div class=\"text-block\">\n            - Projeto com empresa do setor industrial que integrava WooCommerce e ERP via automação batch, resultando em redução do tempo de processamento de pedidos de 2 horas para 10 minutos e diminuição dos erros em 75%. Investimento recuperado em 3 meses via economia operacional.<br>\n- Integração de sistemas diversos com uso intensivo de n8n em empresa de pequeno porte, garantindo automação de fluxos de atendimento e faturamento com painel administrativo, obtendo aumento de 30% na velocidade de resposta a clientes.\n        </div>\n    </div>\n\n    <!-- ===== AGENDAMENTO ===== -->\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <i class=\"fas fa-calendar-alt\"></i>\n            <h3>Agendamento da Reunião de Apresentação</h3>\n        </div>\n        <p style=\"color: var(--dash-text-muted); margin-bottom: var(--dash-spacing-md);\">\n            Selecione uma das opções abaixo para confirmar a reunião:\n        </p>\n        <div class=\"info-grid\" style=\"margin-bottom: var(--dash-spacing-md);\">\n            <div class=\"info-item\">\n                <span class=\"label\">Opção 1</span>\n                <span class=\"value\">Segunda-feira 20/07 (horário flexível — a definir)</span>\n                <button class=\"btn btn-success btn-sm\" style=\"margin-top: 4px;\">Confirmar reunião</button>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Opção 2</span>\n                <span class=\"value\">A definir</span>\n                <button class=\"btn btn-success btn-sm\" style=\"margin-top: 4px;\">Confirmar reunião</button>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"label\">Opção 3</span>\n                <span class=\"value\">A definir</span>\n                <button class=\"btn btn-success btn-sm\" style=\"margin-top: 4px;\">Confirmar reunião</button>\n            </div>\n        </div>\n        <div class=\"btn-group\">\n            <button class=\"btn btn-success\">Aprovar</button>\n            <button class=\"btn btn-warning\">Solicitar Ajustes</button>\n            <button class=\"btn btn-danger\">Recusar</button>\n        </div>\n        <p style=\"font-size: 0.8rem; color: var(--dash-text-muted); margin-top: var(--dash-spacing-md);\">\n            Ao clicar em \"Aprovar\", o plano será considerado aceito. \"Solicitar Ajustes\" abrirá um canal para revisões. \"Recusar\" encerrará o processo.\n        </p>\n    </div>\n\n</div>\n",
+                  "beneficios_diferenciais": "• Reduz trabalho manual em pelo menos 15 horas/mês (estimativa de economia de R$ 1.800/mês)\n• Diminui riscos de erro humano (> 70% de redução esperada nos principais processos)\n• Acelera o tempo de resposta a leads (> 40% de redução do tempo)\n• Centraliza dados e gestão em painel administrativo exclusivo\n• Orquestra integrações complexas entre vendas, financeiro e atendimento via IA\n• Desenvolvimento escalável com possibilidade de ampliar IA, integrações e relatórios avançados no futuro",
+                  "caso_similar": "- Projeto com empresa do setor industrial que integrava WooCommerce e ERP via automação batch, resultando em redução do tempo de processamento de pedidos de 2 horas para 10 minutos e diminuição dos erros em 75%. Investimento recuperado em 3 meses via economia operacional.\n- Integração de sistemas diversos com uso intensivo de n8n em empresa de pequeno porte, garantindo automação de fluxos de atendimento e faturamento com painel administrativo, obtendo aumento de 30% na velocidade de resposta a clientes.",
+                  "data_hora_1": "Segunda-feira 20/07 (horário flexível — a definir)",
+                  "data_hora_2": "A definir",
+                  "data_hora_3": "A definir"
+                },
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 7956,
+            "completion_tokens": 6885,
+            "total_tokens": 14841,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_cc79888a92"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Relatório Website": {
+      "main": [
+        [
+          {
+            "node": "Create Briefing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Briefing": {
+      "main": [
+        [
+          {
+            "node": "Create Case",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Action Plan": {
+      "main": [
+        []
+      ]
+    },
+    "Create Case": {
+      "main": [
+        [
+          {
+            "node": "Create Action Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Relatório Website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "4b629a6a-d09a-4cc5-9747-e37432b75ceb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14aca19250a37d2cf90830121913d504ce697564523af8686d5f54f4ff841f14"
+  },
+  "nodeGroups": [],
+  "id": "Omd2ldR7ehbUz0bs",
+  "tags": [
+    {
+      "updatedAt": "2026-06-22T14:00:16.721Z",
+      "createdAt": "2026-06-22T14:00:16.721Z",
+      "id": "CdVBk4NBYDyhwDdJ",
+      "name": "Website Funil"
+    }
+  ]
+}

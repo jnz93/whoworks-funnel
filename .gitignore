@@ -1,0 +1,12 @@
+# Local secrets and environment configuration
+.env
+.env.*
+!.env.example
+
+# Local development and runtime output
+node_modules/
+.DS_Store
+*.log
+tmp/
+temp/
+execution-data/

@@ -1,0 +1,316 @@
+{
+  "name": "Website Funil 2: Agendamento Google Calendar",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "a58b9690-2604-429c-9ad0-967c3da5a4b7",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6b81afed-9e84-4581-992c-c612835ed48c",
+      "name": "Webhook",
+      "webhookId": "a58b9690-2604-429c-9ad0-967c3da5a4b7"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "8dfb3668a50319c87f320ab3dff1fcbf8709e4188136a582e4a663f6b4e80f48@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "WhoWorks"
+        },
+        "start": "={{ $json.start_time }}",
+        "end": "={{ $json.end_time }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $('Webhook').item.json.body.email }}"
+          ],
+          "description": "={{ $('Webhook').item.json.body.description }}",
+          "summary": "={{ $('Webhook').item.json.body.summary }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        512,
+        0
+      ],
+      "id": "307a12ad-2157-4686-b195-58c2db12ff20",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "mQfPGfwD29hCn2tT",
+          "name": "Google Account(jnz93.dev)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// O objeto completo vem em $json, com a estrutura fornecida\nconst body = $json.body; // ou diretamente $json se o body já estiver no nível raiz\n\n// Pega o slot_id escolhido\nconst selectedSlotId = body.slot_id;\n\n// Localiza o slot correspondente no array slots_originais\nconst selectedSlot = body.slots_originais.find(slot => slot.id === selectedSlotId);\n\n// Verifica se encontrou\nif (!selectedSlot) {\n  throw new Error(`Slot com ID \"${selectedSlotId}\" não encontrado em slots_originais.`);\n}\n\n// Extrai os campos no formato desejado (start_time e end_time)\nconst start_time = selectedSlot.starts_at;\nconst end_time = selectedSlot.ends_at;\n\n// Retorna os dados para os próximos nós\nreturn {\n  start_time,\n  end_time,\n  // Opcional: retorna também os dados completos para referência\n  selected_slot: selectedSlot,\n  slot_label: selectedSlot.label,\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        0
+      ],
+      "id": "32088c3f-e835-4d9f-a78f-694a3c9b9fec",
+      "name": "Normalize Data"
+    },
+    {
+      "parameters": {
+        "tableId": "interacoes",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $('Atualizar Lead').item.json.id }}"
+            },
+            {
+              "fieldId": "canal",
+              "fieldValue": "e-mail"
+            },
+            {
+              "fieldId": "historico",
+              "fieldValue": "={{ \"Mensagem inicial automática enviada ao lead confirmando o recebimento do contato e solicitando a confirmação do agendamento\".split() }}"
+            },
+            {
+              "fieldId": "update_at",
+              "fieldValue": "={{ $now }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "3e064f93-a188-47ca-8763-34f9bd9946ff",
+      "name": "Atualiza Interação",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aiBpwmRxaTLKjgmp",
+          "name": "WhoWorks Account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "chatId": "8652065969",
+        "text": "=<b>✅ CONFIRMAÇÃO DE AGENDAMENTO</b>\n\n<b>🆔 ID do Agendamento:</b> <code>{{ $('Webhook').item.json.body.agendamento_id }}</code>\n<b>📧 E-mail:</b> <code>{{ $('Webhook').item.json.body.email }}</code>\n<b>📌 Resumo:</b> <code>{{ $('Webhook').item.json.body.summary }}</code>\n<b>📝 Descrição:</b> <code>{{ $('Webhook').item.json.body.description }}</code>\n\n<i>🔔 Agendamento foi realizado com sucesso!</i>",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_notification": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1232,
+        0
+      ],
+      "id": "a55ccd58-40e6-4307-a1e3-73dd116e196e",
+      "name": "Notificação",
+      "webhookId": "6e71aa97-8077-4f33-b66f-bb3865376d46",
+      "retryOnFail": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "dbvvNFXTXGlubgAv",
+          "name": "WhoWorks Sentinela BOT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "agendamento_post_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook').item.json.body.agendamento_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agendamento_slot_escolhido",
+              "fieldValue": "={{ $('Webhook').item.json.body.slot_id }}"
+            },
+            {
+              "fieldId": "agendamento_confirmed_at",
+              "fieldValue": "={{ $now }}"
+            },
+            {
+              "fieldId": "agendamento_status",
+              "fieldValue": "confirmed"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        784,
+        0
+      ],
+      "id": "fe6aa63f-3c15-4f90-987c-a3e4febdaea4",
+      "name": "Atualizar Lead",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aiBpwmRxaTLKjgmp",
+          "name": "WhoWorks Account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-lfs6.srv1550174.hstgr.cloud",
+            "user-agent": "WordPress/7.1.3; https://whoworks.com.br",
+            "content-length": "856",
+            "accept": "*/*",
+            "accept-encoding": "deflate, gzip, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "2a02:4780:13:1170:0:159e:737c:1",
+            "x-forwarded-host": "n8n-lfs6.srv1550174.hstgr.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "srv1550174",
+            "x-real-ip": "2a02:4780:13:1170:0:159e:737c:1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "agendamento_id": 7908,
+            "email": "joanez_andrades@hotmail.com",
+            "user_id": 0,
+            "slot_id": "slot-3",
+            "slot_label": "30/10/2026 às 12:20",
+            "confirmado_em": "2026-10-27T11:29:06-03:00",
+            "slots_originais": [
+              {
+                "id": "slot-1",
+                "starts_at": "2026-10-30T11:00:00-03:00",
+                "ends_at": "2026-10-30T11:30:00-03:00",
+                "timezone": "America/Sao_Paulo",
+                "label": "30/10/2026 às 11:00"
+              },
+              {
+                "id": "slot-2",
+                "starts_at": "2026-10-30T11:40:00-03:00",
+                "ends_at": "2026-10-30T12:10:00-03:00",
+                "timezone": "America/Sao_Paulo",
+                "label": "30/10/2026 às 11:40"
+              },
+              {
+                "id": "slot-3",
+                "starts_at": "2026-10-30T12:20:00-03:00",
+                "ends_at": "2026-10-30T12:50:00-03:00",
+                "timezone": "America/Sao_Paulo",
+                "label": "30/10/2026 às 12:20"
+              }
+            ],
+            "description": "Temos essa loja Woocommerce que precisa de suporte e desenvolvimento de nova funcionalidades.",
+            "summary": "Problemas em WordPress ou WooCommerce - MakeIt"
+          },
+          "webhookUrl": "https://n8n-lfs6.srv1550174.hstgr.cloud/webhook/a58b9690-2604-429c-9ad0-967c3da5a4b7",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Data": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualiza Interação": {
+      "main": [
+        [
+          {
+            "node": "Notificação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Lead": {
+      "main": [
+        [
+          {
+            "node": "Atualiza Interação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "56171d3a-69c6-4990-bc15-6afdd3e31d38",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14aca19250a37d2cf90830121913d504ce697564523af8686d5f54f4ff841f14"
+  },
+  "nodeGroups": [],
+  "id": "wcjJCjVpDwcietDK",
+  "tags": [
+    {
+      "updatedAt": "2026-06-22T14:00:16.721Z",
+      "createdAt": "2026-06-22T14:00:16.721Z",
+      "id": "CdVBk4NBYDyhwDdJ",
+      "name": "Website Funil"
+    }
+  ]
+}

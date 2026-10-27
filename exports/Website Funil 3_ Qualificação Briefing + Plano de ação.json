@@ -1,0 +1,1167 @@
+{
+  "name": "Website Funil 3: Qualificação Briefing + Plano de ação",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d5a80179-5745-4aa2-ae48-e236f6559026",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2176,
+        192
+      ],
+      "id": "7bff517b-4a46-4dba-94c3-aebadb0be8e4",
+      "name": "Webhook",
+      "webhookId": "d5a80179-5745-4aa2-ae48-e236f6559026"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1040,
+        448
+      ],
+      "id": "17ff142f-32d8-43b2-a41a-f4d73ab4ebca",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "FPvqDxTQ8K9jjUHg",
+          "name": "CyberReport APIKEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"subject\": \"Contato empresarial\",\n\t\"body\": \"Mensagem formatada em HTML\",\n    \"resumo\": \"Resumo da interação para armazenar como histórico\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1584,
+        720
+      ],
+      "id": "696d7f16-2bf6-4b9a-bbc8-27fb335fc740",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fromEmail": "mail@whoworks.com.br",
+        "toEmail": "={{ $('Normalize Data').item.json.email }}",
+        "subject": "={{ $('Edit Fields').item.json.doc_title }}",
+        "html": "=<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Proposta de solução [empresa] - WhoWorks Consulting</title>\n    <style type=\"text/css\">\n        .v1container {\n            width: 100%;\n            max-width: 640px;\n            margin: 0 auto;\n            background-color: #ffffff;\n        }\n\n        .v1header {\n            padding: 32px 24px 24px;\n            background: #ffffff;\n            border-bottom: 1px solid #e5eaf0;\n        }\n\n        .v1header-logo {\n            width: 160px;\n        }\n\n        .v1agent-card {\n            margin-top: 20px;\n            padding: 16px;\n            border: 1px solid #e5eaf0;\n            border-radius: 10px;\n            display: flex;\n            align-items: center;\n            background: #f9fafb;\n        }\n\n        .v1agent-avatar {\n            width: 54px;\n            height: 54px;\n            border-radius: 50%;\n            background: #ddd;\n            margin-right: 14px;\n        }\n\n        .v1agent-info h4 {\n            margin: 0;\n            font-size: 15px;\n            font-weight: bold;\n        }\n\n        .v1agent-info p {\n            margin: 2px 0 0;\n            font-size: 13px;\n            color: #555;\n        }\n\n        .v1hero {\n            padding: 36px 24px 24px;\n            text-align: left;\n            border-bottom: 1px solid #e5eaf0;\n        }\n\n        .v1hero-pretitle {\n            font-size: 13px;\n            text-transform: uppercase;\n            font-weight: bold;\n            color: #6a6a6a;\n            letter-spacing: .5px;\n        }\n\n        .v1hero-title {\n            font-size: 26px;\n            font-weight: 800;\n            margin: 12px 0;\n            color: #111;\n        }\n\n        .v1hero-desc {\n            font-size: 15px;\n            line-height: 1.5;\n            color: #444;\n            margin-bottom: 24px;\n        }\n\n        .v1button {\n            display: inline-block;\n            padding: 14px 22px;\n            color: #fff !important;\n            background-color: #0057ff;\n            text-decoration: none;\n            font-size: 15px;\n            border-radius: 8px;\n            font-weight: bold;\n            margin-top: 8px;\n        }\n\n        .v1safe-note {\n            font-size: 12px;\n            color: #666;\n            margin-top: 8px;\n        }\n\n        .v1content {\n            font-size: 15px;\n            line-height: 1.6;\n            color: #333;\n        }\n\n        .v1footer {\n            padding: 32px 24px;\n            font-size: 13px;\n            color: #666;\n            background: #f0f2f5;\n            border-top: 1px solid #e5eaf0;\n            text-align: left;\n        }\n\n        .v1footer a {\n            color: #0057ff;\n            text-decoration: none;\n        }\n\n        @media only screen and (max-width: 600px) {\n            .v1container {\n                width: 100% !important;\n                padding: 20px !important;\n            }\n\n            .v1profile-box {\n                text-align: center !important;\n                padding-top: 15px !important;\n            }\n\n            .v1profile-box img {\n                margin-bottom: 10px !important;\n            }\n        }\n    </style>\n</head>\n\n<body id=\"editbody1\" style=\"font-size: 10pt; font-family: Verdana, Geneva, sans-serif; margin:0; padding:0;\">\n    <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\n        <tr>\n            <td align=\"center\" style=\"padding:40px 15px;\">\n                <table class=\"v1container\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#ffffff\" style=\"border-radius:14px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.08);\">\n                    \n                    <!-- HEADER -->\n                    <tr>\n                        <td style=\"background:#0f172a; padding:35px 40px;\">\n                            <table width=\"100%\">\n                                <tr>\n                                    <td width=\"50%\" valign=\"middle\">\n                                        <img src=\"https://whoworks.com.br/wp-content/uploads/2025/06/WhoWorks-Logotipo-Lab-3.svg\" width=\"240\" alt=\"WhoWorks Logo\" style=\"display:block; filter:brightness(200%);\" />\n                                    </td>\n                                    <td width=\"50%\" valign=\"middle\" align=\"right\" class=\"v1profile-box\">\n                                        <table style=\"background:#1e293b; padding:12px 16px; border-radius:10px;\">\n                                            <tr>\n                                                <td>\n                                                    <table>\n                                                        <tr>\n                                                            <td rowspan=\"3\" valign=\"top\" style=\"padding-right:10px;\">\n                                                                <img src=\"https://ui-avatars.com/api/?name=Joanez+Andrades&background=1473E6&color=fff&size=60\" width=\"46\" alt=\"Avatar Joanez Andrades\" style=\"border-radius:50%;\" />\n                                                            </td>\n                                                            <td style=\"font-size:14px; color:#f1f5f9; font-weight:bold;\">Joanez Andrades</td>\n                                                        </tr>\n                                                        <tr>\n                                                            <td style=\"font-size:12px; color:#cbd5e1;\">Founder &amp; Lead Engineer</td>\n                                                        </tr>\n                                                        <tr>\n                                                            <td style=\"font-size:12px; color:#94a3b8;\">WhoWorks Consulting</td>\n                                                        </tr>\n                                                    </table>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </td>\n                                </tr>\n                            </table>\n                        </td>\n                    </tr>\n\n                   \n\n                    <!-- SIGNATURE -->\n                    <tr>\n                        <td style=\"padding:0 40px 40px 40px; font-size:14px; color:#333;\">\n                            Atenciosamente,<br><br>\n                            <strong>Joanez Andrades</strong><br>\n                            Founder &amp; Lead Engineer — WhoWorks Consulting<br>\n                            <a href=\"mailto:contato@whoworks.com.br\" style=\"color:#1473e6;\" rel=\"noreferrer\">contato@whoworks.com.br</a> &middot;\n                            <a href=\"https://whoworks.com.br\" style=\"color:#1473e6;\" target=\"_blank\" rel=\"noopener noreferrer\">whoworks.com.br</a>\n                        </td>\n                    </tr>\n\n                    <!-- FOOTER -->\n                    <tr>\n                        <td style=\"padding:20px; text-align:center; background:#f9fafb; font-size:12px; color:#777;\">\n                            WhoWorks Consulting<br>\n                            Soluções Técnicas em WordPress &bull; Automação &bull; Integrações<br>\n                            &copy; 2025 WhoWorks Consulting. Todos os direitos reservados.\n                        </td>\n                    </tr>\n                </table>\n            </td>\n        </tr>\n    </table>\n</body>\n</html>",
+        "options": {
+          "ccEmail": "joanez@whoworks.com.br",
+          "bccEmail": "joanes.andrades@hotmail.com"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        -176
+      ],
+      "id": "e5ef68be-9da4-4f07-ad93-12985ddbfa59",
+      "name": "Send email",
+      "webhookId": "263ad93c-a0e5-4a25-8025-0016e641eb86",
+      "executeOnce": true,
+      "credentials": {
+        "smtp": {
+          "id": "R3GCqg8tToq0M05g",
+          "name": "SMTP account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.lead_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "telefone",
+              "fieldValue": "={{ $json.phone }}"
+            },
+            {
+              "fieldId": "status_funil",
+              "fieldValue": "Qualificação"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1408,
+        192
+      ],
+      "id": "28446cd3-ab9f-4f24-9217-cff07f7d179d",
+      "name": "UpdateLeads",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "aiBpwmRxaTLKjgmp",
+          "name": "WhoWorks Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "briefings",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $json['lead-id'] }}"
+            },
+            {
+              "fieldId": "briefing_type",
+              "fieldValue": "={{ $json['briefing-type'] }}"
+            },
+            {
+              "fieldId": "location",
+              "fieldValue": "={{ $json.localizacao }}"
+            },
+            {
+              "fieldId": "annual_revenue",
+              "fieldValue": "={{ $json['faturamento-anual'] }}"
+            },
+            {
+              "fieldId": "consent_accepted",
+              "fieldValue": "={{ $json['consent-term'] }}"
+            },
+            {
+              "fieldId": "form_raw",
+              "fieldValue": "={{ $json }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "submitted"
+            },
+            {
+              "fieldId": "industry_segment",
+              "fieldValue": "={{ $json.segmento }}"
+            },
+            {
+              "fieldId": "company_size",
+              "fieldValue": "={{ $json['tamanho-empresa'] }}"
+            },
+            {
+              "fieldId": "full_name",
+              "fieldValue": "={{ $json['nome-completo'] }}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $json.email }}"
+            },
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{ $json.telefone }}"
+            },
+            {
+              "fieldId": "company",
+              "fieldValue": "={{ $json.empresa }}"
+            },
+            {
+              "fieldId": "job_title",
+              "fieldValue": "={{ $json.cargo }}"
+            },
+            {
+              "fieldId": "linkedin_url",
+              "fieldValue": "={{ $json.linkedin }}"
+            },
+            {
+              "fieldId": "observations",
+              "fieldValue": "={{ $json['observacoes-finais'] }}"
+            },
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ $now }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ $now }}"
+            },
+            {
+              "fieldId": "schedule_meeting",
+              "fieldValue": "={{ $json['agendar-reuniao'] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1648,
+        192
+      ],
+      "id": "c6492e6b-aec5-43a5-aa7b-b7cd4682e5fe",
+      "name": "CreateNewBriefing",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aiBpwmRxaTLKjgmp",
+          "name": "WhoWorks Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.text.replace(/^```markdown\\s*([\\s\\S]*?)```$/m, \"$1\") }}",
+        "options": {
+          "requireSpaceBeforeHeadingText": true,
+          "noHeaderId": true,
+          "tables": true
+        }
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        752,
+        448
+      ],
+      "id": "75bb692c-16fe-40cc-8b8e-fff76435fcd8",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "data",
+        "binaryPropertyName": "file",
+        "options": {
+          "fileName": "={{ $json.doc_title }}.html"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        944,
+        448
+      ],
+      "id": "d94dc2e8-a53f-4228-9acf-cfe8655286f2",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item;\n\nif (item.binary && item.binary.file) {\n  item.binary.file.mimeType = 'text/html';\n}\n\nreturn item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        448
+      ],
+      "id": "841f92d0-746d-4ab1-acc4-7d1e66feb702",
+      "name": "Set to text/html"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2a8afe31-c89d-4c1e-baae-359ac7f5a346",
+              "name": "briefing_title",
+              "value": "=Briefing: {{ $('Normalize Data').item.json['briefing-type'] }} - {{ $('Normalize Data').item.json.empresa }}",
+              "type": "string"
+            },
+            {
+              "id": "1fbc801c-02b1-49b3-b9f6-3640e3488e24",
+              "name": "=briefing_content",
+              "value": "={{ $('Normalize Data').item.json.toJsonString() }}",
+              "type": "string"
+            },
+            {
+              "id": "e3d23df1-3a9a-498e-b6ec-b69bec6fb457",
+              "name": "action_plan_title",
+              "value": "=Plano de Ação: {{ $('Normalize Data').item.json['briefing-type'] }} - {{ $('Normalize Data').item.json.empresa }}",
+              "type": "string"
+            },
+            {
+              "id": "3a6a7eae-29d0-4571-a25e-921a4c83c610",
+              "name": "action_plan_content",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "8f9c9e4f-a708-49a8-8a57-e09ab07e146a",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "1c355d68-aeab-4aac-b65b-a6cbf6f35564",
+              "name": "environment",
+              "value": "={{ $('Webhook').item.json.headers['user-agent'].match(/https?:\\/\\/[^\\s]+/)[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        192
+      ],
+      "id": "9fc75ac1-9612-4d7f-890d-997c780818f9",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Dados do Briefing:\n{{ $('CreateNewBriefing').item.json.form_raw.toJsonString() }}\n\nInformações do Lead:\n- Nome: {{ $('CreateNewBriefing').item.json.full_name }}\n- Empresa: {{ $('CreateNewBriefing').item.json.company }}\n- Cargo: {{ $('CreateNewBriefing').item.json.job_title }}\n- E-mail: {{ $('CreateNewBriefing').item.json.email }}\n- Telefone: {{ $('CreateNewBriefing').item.json.phone }}\n- Segmento: {{ $('CreateNewBriefing').item.json.industry_segment }}\n- Localização: {{ $('CreateNewBriefing').item.json.location }}\n- Faturamento: {{ $('CreateNewBriefing').item.json.annual_revenue }}\n\nTipo de Briefing: {{ $('CreateNewBriefing').item.json.briefing_type }}\n\nInstruções:\n- Gere um plano de ação personalizado para o briefing.\n- Utilize o template de saída adequado ao tipo de serviço.\n- Inclua casos similares relevantes.\n- Calcule o ROI estimado com base nas horas estimadas (custo hora padrão: R$ 120, ajuste se disponível).\n- Adapte o tom conforme o cargo do lead (técnico, executivo, gerencial).\n- Mantenha foco na solução técnica e comercial, destacando valor e próximos passos claros.",
+        "options": {
+          "systemMessage": "=Você é um Especialista em Desenvolvimento e Consultoria Técnica da WhoWorks com 10+ anos de experiência. Transforme briefings em planos de ação personalizados que geram confiança, demonstram valor e facilitam a decisão do cliente.\n\n## Análise Rápida (inferir do briefing)\n1. Classifique: [Urgente/Planejamento] [Técnico/Estratégico] [Orçamento: Baixo/Médio/Alto]\n2. Identifique: dor principal, aspiração e necessidade oculta.\n3. Contextualize: setor do cliente + maturidade digital (estimada).\n\n## Conexão com Casos Similares\n- Busque em \"similar_projects\" projetos com mesmo briefing_type, mesmo segmento ou problemas semelhantes.\n- Extraia 1-2 cases relevantes, métricas de ROI e lições aprendidas aplicáveis.\n\n## Templates por Tipo de Briefing (use o correspondente ao briefing_type)\n\n### 1. Operação Comercial e Leads\n**Campos-chave:** leads-origem, leads-registro, canais-resposta, tempo-resposta, perda-motivos, follow-up, ferramenta-crm, resultado-esperado, notificacoes-responsavel, canal-avisos, msg-automatica, modelo-mensagem, integracao-whatsapp.\n\n**Template:**\n## 🚀 OTIMIZAÇÃO DA OPERAÇÃO COMERCIAL\n\n### 📌 PROBLEMA IDENTIFICADO\n\n[Descrever a perda/desorganização de leads, gargalos no follow-up, ou falta de registro]\n\n### 🎯 NOSSA ABORDAGEM\n\n1. **Mapeamento do fluxo atual** (3-5 dias)\n    - Análise das fontes de leads e canais de resposta\n    - Identificação de pontos de perda e atrasos\n2. **Automação e integração** (2-4 semanas)\n    - Configuração de CRM/ferramentas (ex: HubSpot, RD Station, ou integração com WhatsApp/Telegram)\n    - Criação de fluxos de resposta automática e lembretes\n    - Definição de regras de qualificação e distribuição\n3. **Treinamento e implantação** (1 semana)\n    - Capacitação da equipe\n    - Acompanhamento pós-implantação\n\n### 💡 VALOR ESPECÍFICO PARA VOCÊ\n\n- Redução do tempo de resposta para [X] minutos\n- Aumento de [Y]% na taxa de conversão de leads\n- Eliminação de perda de leads por falta de registro ou follow-up\n- Centralização de todas as interações em um único canal\n\n### 👥 CASO SIMILAR: [Cliente do mesmo setor]\n\n\"Implementamos fluxo similar para [empresa] e reduzimos o tempo de resposta de 12h para 15min, com aumento de 30% nas conversões.\"\n\n### 📅 PRÓXIMOS PASSOS\n\n1. Reunião de diagnóstico (30 min)\n2. Proposta de automação personalizada\n3. Implantação piloto (2 semanas)\n\n---\n\n### 2. Técnico WordPress/WooCommerce\n**Campos-chave:** plataforma, problema-principal, url-afetada, hospedagem-tipo, backups-recentes, afeta-vendas, gateways, estoque, emissao-fiscal, erp-planilha, pagespeed-feito, cdn, plugin-seguranca.\n\n**Template:**\n## 🛠️ SOLUÇÃO TÉCNICA PARA WORDPRESS/WOOCOMMERCE\n\n### 📌 PROBLEMA IDENTIFICADO\n\n[Descrever o erro, lentidão, falha no checkout, problema de plugin/tema, segurança, etc.]\n\n### 🎯 NOSSA ABORDAGEM\n\n1. **Diagnóstico completo** (2-3 dias)\n    - Análise de logs, performance, segurança e compatibilidade\n    - Identificação da causa raiz (plugin conflitante, tema, hospedagem, etc.)\n2. **Correção e otimização** (1-3 semanas, conforme complexidade)\n    - Correção do erro específico\n    - Otimização de performance (cache, CDN, imagens, banco de dados)\n    - Reforço de segurança (firewall, monitoramento, atualizações)\n3. **Testes e validação** (3-5 dias)\n    - Testes em ambiente de staging\n    - Validação de integrações (gateways, ERP, estoque)\n    - Plano de rollback\n\n### 💡 VALOR ESPECÍFICO PARA VOCÊ\n\n- Site estável e rápido (melhoria de [X]% no PageSpeed)\n- Checkout funcionando sem erros → aumento de conversão\n- Segurança reforçada contra invasões\n- Integrações (ERP, fiscal, estoque) fluindo corretamente\n\n### 👥 CASO SIMILAR: [Cliente do mesmo segmento]\n\n\"Resolvemos problema de lentidão no WooCommerce para [empresa], reduzindo o tempo de carregamento de 8s para 2s, resultando em aumento de 15% nas vendas.\"\n\n### 📅 PRÓXIMOS PASSOS\n\n1. Reunião técnica para detalhamento (30 min)\n2. Plano de ação com cronograma\n3. Intervenção agendada (fora do horário de pico)\n\n---\n\n### 3. Automação, Integrações e Desenvolvimento\n**Campos-chave:** problema-resolver, onde-acontece, sistemas-envolvidos, processo-manual, automatico-esperado, integracao-origem/destino, feature-sistema, ia-tarefa, impacto-esperado, etc.\n\n**Template:**\n## ⚙️ AUTOMAÇÃO, INTEGRAÇÃO E DESENVOLVIMENTO\n\n### 📌 CONTEXTO ATUAL\n\n[Descrever o processo manual, sistemas desconectados, ou funcionalidade desejada]\n\n### 🎯 SOLUÇÃO PROPOSTA\n\n1. **Levantamento de requisitos** (3-5 dias)\n    - Mapeamento detalhado do processo atual (passo a passo)\n    - Identificação de sistemas, APIs e pontos de integração\n    - Definição de fluxo futuro (automatizado)\n2. **Desenvolvimento e integração** (4-8 semanas, conforme escopo)\n    - Criação de automações (n8n, Zapier, ou código customizado)\n    - Integração entre sistemas (ERP, CRM, e-commerce, planilhas, etc.)\n    - Desenvolvimento de novas features (se aplicável)\n    - Implementação de IA (chatbots, análise preditiva, etc.)\n3. **Testes e implantação** (1-2 semanas)\n    - Testes de ponta a ponta\n    - Validação de casos de exceção\n    - Treinamento e documentação\n\n### 💡 VALOR ESPECÍFICO PARA VOCÊ\n\n- Eliminação de tarefas manuais (economia de [X] horas/mês)\n- Redução de erros e retrabalho\n- Agilidade nos processos (ex: lead → venda → faturamento)\n- Visibilidade centralizada das operações\n\n### 👥 CASO SIMILAR: [Cliente com automação similar]\n\n\"Automatizamos o fluxo de integração entre WooCommerce e ERP para [empresa], reduzindo o tempo de processamento de pedidos de 2h para 5min.\"\n\n### 📅 PRÓXIMOS PASSOS\n\n1. Workshop de mapeamento (2h)\n2. Prova de conceito (POC) com um fluxo crítico\n3. Proposta detalhada com cronograma e investimento\n\n---\n### 4. Triagem Geral (\"Outro\")\n**Campos-chave:** problema-principal-outro, area-problema-outro, ferramenta-envolvida-outro, resultado-esperado-outro, urgencia-outro, reuniao-explicar-outro.\n\n**Template:**\n## 📋 TRIAGEM E ENCAMINHAMENTO\n\n### 📌 DESCRIÇÃO DO PROBLEMA\n\n[Resumir o problema relatado, área afetada e ferramentas envolvidas]\n\n### 🎯 ABORDAGEM DE TRIAGEM\n\n1. **Entendimento aprofundado** (1-2 dias)\n    - Análise do problema e seu impacto\n    - Identificação de requisitos não explicitados\n2. **Classificação e encaminhamento**\n    - Se for oportunidade de automação/integração → encaminhar para área de Automação\n    - Se for problema técnico em WP/Woo → encaminhar para área Técnica\n    - Se for demanda de leads/CRM → encaminhar para área Comercial\n    - Caso seja um problema novo → criar um escopo personalizado\n3. **Proposta inicial**\n    - Definição de próximos passos específicos (reunião com especialista, análise adicional, etc.)\n\n### 💡 VALOR PARA O CLIENTE\n\n- Direcionamento correto desde o início, evitando perda de tempo\n- Solução adequada à real necessidade\n- Agilidade na resolução\n\n### 👥 CASO SIMILAR: [Caso de triagem bem-sucedida]\n\n\"Encaminhamos demanda de 'melhorar atendimento' para automação, resultando em redução de 40% no tempo de resposta.\"\n\n### 📅 PRÓXIMOS PASSOS\n\n1. Reunião de esclarecimento (20 min)\n2. Encaminhamento para especialista da área\n3. Definição de escopo detalhado\n\n---\n\n## Adaptação de Tom\n- **CTO/Dev**: técnico, foco em arquitetura, escalabilidade, performance.\n- **CEO/Diretor**: estratégico, foco em ROI, crescimento, vantagem competitiva.\n- **Gerente**: operacional, foco em eficiência, implantação, adoção.\n- Outros: equilibrado, claro, valor.\n\n## Cálculo de ROI\n- Use as horas estimadas ({{ $json.briefing.estimated_hours }}) como base.\n- Calcule economia: horas economizadas/mês × custo hora (assumir R$ 120/h, ajustar se disponível).\n- Inclua ganhos indiretos (redução de erros, aumento de conversão, etc.) se houver dados.\n\n## Estrutura da Saída\nUtilize o template de saída completo (ANÁLISE TÉCNICA E PROPOSIÇÃO DE SOLUÇÃO) conforme abaixo, adaptando as seções para o tipo de briefing:\n\n- RESUMO EXECUTIVO\n- ANÁLISE DO CONTEXTO\n- PROPOSTA DE SOLUÇÃO TÉCNICA (use o template correspondente)\n- ANÁLISE DE VIABILIDADE\n- ABORDAGEM DE IMPLEMENTAÇÃO\n- INTEGRAÇÕES E DEPENDÊNCIAS (se aplicável)\n- RISCOS TÉCNICOS (se aplicável)\n- MÉTRICAS DE SUCESSO\n- RECOMENDAÇÕES E ALTERNATIVAS\n- CASOS SIMILARES APLICÁVEIS\n- ROADMAP SUGERIDO\n- PRÓXIMOS PASSOS RECOMENDADOS\n- PONTOS PARA ESCLARECIMENTO\n\nPreencha cada seção com base no briefing, nos casos similares e nas horas estimadas. Seja conciso, profissional, e sempre conecte as recomendações às dores do cliente.\n\n## Checklist de Qualidade\n- [ ] Todos os requisitos abordados\n- [ ] Benefícios conectados às dores\n- [ ] Tom adequado ao interlocutor\n- [ ] Casos similares relevantes\n- [ ] Métricas de ROI claras\n- [ ] Próximos passos específicos\n- [ ] Call-to-action claro\n\n---\nData: {{ $now.format('dd-MM-yyyy HH:mm:ss') }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1040,
+        192
+      ],
+      "id": "faff57b8-78e9-4cbe-bf1b-c9a59ab91fb5",
+      "name": "Brief2Plan"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "interacoes",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Normalize Data').item.json['lead-id'] }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "historico",
+              "fieldValue": "={{ $json.historico }}"
+            },
+            {
+              "fieldId": "update_at",
+              "fieldValue": "={{ $now }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2288,
+        112
+      ],
+      "id": "e595b0d4-d82c-4db6-80b3-2f7ac7241414",
+      "name": "UpdateInteracoes",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aiBpwmRxaTLKjgmp",
+          "name": "WhoWorks Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Atualizar \"interacoes\"\n- Necessário obter o histórico salvo\n- Concatenar com a nova informação\n- Converter em JSON\n- Atualizar DB",
+        "height": 320,
+        "width": 784
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        -48
+      ],
+      "id": "5aa33493-6dd4-4797-9710-37cf5a32a15d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// Nó: Atualizar histórico do lead com base no fluxo concluído\n// ============================================================\nconst input = $input.first().json;\nconst historico = input.historico || [];\n\n// Dados disponíveis no fluxo (certifique-se de que estão no payload)\nconst briefingType = $('Normalize Data').first().json['briefing-type'] || 'Briefing';\nconst leadName = $('Normalize Data').first().json['nome-completo'] || 'Lead';\nconst emailSent = $('Send email').first().json.message ? true : false;   // booleano\nconst planGenerated = $('Brief2Plan').first().json.output ? true : false;\n\n// ============================================================\n// 1. Mensagem de recebimento e tipo de briefing\n// ============================================================\nhistorico.push(\n  `📥 Briefing do tipo \"${briefingType}\" recebido e processado com sucesso.`\n);\n\n// ============================================================\n// 2. Mensagem sobre a geração do plano\n// ============================================================\nif (planGenerated) {\n  historico.push(\n    `📋 Plano de ação gerado automaticamente pelo agente Brief2Plan com base nas necessidades do lead.`\n  );\n} else {\n  historico.push(\n    `⚠️ Plano de ação não gerado (falha no agente). Verificar logs.`\n  );\n}\n\n// ============================================================\n// 3. Mensagem sobre o envio do e-mail\n// ============================================================\nif (emailSent) {\n  historico.push(\n    `📧 E-mail com o plano detalhado enviado para ${leadName} (${input.email || 'e-mail não informado'}).`\n  );\n} else {\n  historico.push(\n    `⏳ E-mail com o plano não enviado (falha na entrega). Retentativa agendada.`\n  );\n}\n\n// ============================================================\n// 4. Mensagem final de status (próximos passos)\n// ============================================================\nhistorico.push(\n  `🔄 Lead aguarda retorno ou próxima interação. O time de vendas/técnico será notificado.`\n);\n\n// ============================================================\n// Saída: atualizar o objeto com o novo histórico\n// ============================================================\n$input.first().json.historico = historico;\n\n// (Opcional) Replicar para outros nós que dependam desse objeto\nreturn $input.first().json;\n\n\n\n\n// OLD\n// $input.first().json.historico.push('Briefing de qualificação concluído e disponível para consulta.');\n// $input.first().json.historico.push('Lead qualificado com sucesso.');\n// $input.first().json.historico.push('Solução customizada criada e em análise pelo time responsável; atualização ocorrerá conforme evolução da revisão.');\n\n// return $input.first().json;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2096,
+        112
+      ],
+      "id": "16023351-826c-4538-9a73-cb3179e3912e",
+      "name": "UpdateHistorico",
+      "executeOnce": false,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "interacoes",
+        "limit": 10,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "=48"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        112
+      ],
+      "id": "e4c0dd0d-efc8-443d-8fc5-0d11c09fd4ed",
+      "name": "GetInteracoes",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "aiBpwmRxaTLKjgmp",
+          "name": "WhoWorks Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "briefings",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Normalize Data').item.json['lead-id'] }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "qualified"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ $now }}"
+            },
+            {
+              "fieldId": "generated_plan",
+              "fieldValue": "={{ $('Brief2Plan').item.json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        624,
+        192
+      ],
+      "id": "eda3aa08-72f6-49d1-abf0-ad072ab954b1",
+      "name": "UpdabeBriefingsStatus",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aiBpwmRxaTLKjgmp",
+          "name": "WhoWorks Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2560,
+        384
+      ],
+      "id": "c63942aa-b6f4-470e-9216-7073495de049",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "FPvqDxTQ8K9jjUHg",
+          "name": "CyberReport APIKEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"subject\": \"Contato empresarial\",\n\t\"body\": \"Mensagem formatada em HTML\",\n    \"resumo\": \"Resumo da interação para armazenar como histórico\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2912,
+        368
+      ],
+      "id": "adb107dd-df9b-4ea2-a2cb-7d0febd6a6fd",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Dados do Lead:\n- Nome: {{ $('Normalize Data').item.json.name }}\n- E-mail: {{ $('Normalize Data').item.json.email }}\n- Serviço: {{ $('Normalize Data').item.json.service }}\n- Representante da empresa: {{ $('Normalize Data').item.json.company }}\n- Histórico do Lead: \n\n-----\n### Plano de ação proposto\n\n{{ $('Markdown').item.json.doc_title }}\n\n{{ $('Markdown').item.json.data }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=## 🎯 Objetivo\n- **Analisar solução proposta → Gerar apresentação clara da proposta de solução.**  \n- Não há necessidade de classificação complexa ou agendamento neste momento.\n\n\n---\n\n### 2. **Processamento**\n- Identificar o nome e empresa para personalizar a resposta.  \n- Reconhecer a solução proposta para contextualizar.  \n- Gerar uma apresentação cordial e profissional.  \n\n---\n\n### 3. **Saída (Resposta Automática)**\nAqui está um **modelo de resposta inicial** que o agente pode enviar em HTML:\n\n```\n<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Proposta de solução [empresa] - WhoWorks Consulting</title>\n    <style type=\"text/css\">\n        .v1container {\n            width: 100%;\n            max-width: 640px;\n            margin: 0 auto;\n            background-color: #ffffff;\n        }\n\n        .v1header {\n            padding: 32px 24px 24px;\n            background: #ffffff;\n            border-bottom: 1px solid #e5eaf0;\n        }\n\n        .v1header-logo {\n            width: 160px;\n        }\n\n        .v1agent-card {\n            margin-top: 20px;\n            padding: 16px;\n            border: 1px solid #e5eaf0;\n            border-radius: 10px;\n            display: flex;\n            align-items: center;\n            background: #f9fafb;\n        }\n\n        .v1agent-avatar {\n            width: 54px;\n            height: 54px;\n            border-radius: 50%;\n            background: #ddd;\n            margin-right: 14px;\n        }\n\n        .v1agent-info h4 {\n            margin: 0;\n            font-size: 15px;\n            font-weight: bold;\n        }\n\n        .v1agent-info p {\n            margin: 2px 0 0;\n            font-size: 13px;\n            color: #555;\n        }\n\n        .v1hero {\n            padding: 36px 24px 24px;\n            text-align: left;\n            border-bottom: 1px solid #e5eaf0;\n        }\n\n        .v1hero-pretitle {\n            font-size: 13px;\n            text-transform: uppercase;\n            font-weight: bold;\n            color: #6a6a6a;\n            letter-spacing: .5px;\n        }\n\n        .v1hero-title {\n            font-size: 26px;\n            font-weight: 800;\n            margin: 12px 0;\n            color: #111;\n        }\n\n        .v1hero-desc {\n            font-size: 15px;\n            line-height: 1.5;\n            color: #444;\n            margin-bottom: 24px;\n        }\n\n        .v1button {\n            display: inline-block;\n            padding: 14px 22px;\n            color: #fff !important;\n            background-color: #0057ff;\n            text-decoration: none;\n            font-size: 15px;\n            border-radius: 8px;\n            font-weight: bold;\n            margin-top: 8px;\n        }\n\n        .v1safe-note {\n            font-size: 12px;\n            color: #666;\n            margin-top: 8px;\n        }\n\n        .v1content {\n            font-size: 15px;\n            line-height: 1.6;\n            color: #333;\n        }\n\n        .v1footer {\n            padding: 32px 24px;\n            font-size: 13px;\n            color: #666;\n            background: #f0f2f5;\n            border-top: 1px solid #e5eaf0;\n            text-align: left;\n        }\n\n        .v1footer a {\n            color: #0057ff;\n            text-decoration: none;\n        }\n\n        @media only screen and (max-width: 600px) {\n            .v1container {\n                width: 100% !important;\n                padding: 20px !important;\n            }\n\n            .v1profile-box {\n                text-align: center !important;\n                padding-top: 15px !important;\n            }\n\n            .v1profile-box img {\n                margin-bottom: 10px !important;\n            }\n        }\n    </style>\n</head>\n\n<body id=\"editbody1\" style=\"font-size: 10pt; font-family: Verdana, Geneva, sans-serif; margin:0; padding:0;\">\n    <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\n        <tr>\n            <td align=\"center\" style=\"padding:40px 15px;\">\n                <table class=\"v1container\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#ffffff\" style=\"border-radius:14px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.08);\">\n                    \n                    <!-- HEADER -->\n                    <tr>\n                        <td style=\"background:#0f172a; padding:35px 40px;\">\n                            <table width=\"100%\">\n                                <tr>\n                                    <td width=\"50%\" valign=\"middle\">\n                                        <img src=\"https://whoworks.com.br/wp-content/uploads/2025/06/WhoWorks-Logotipo-Lab-3.svg\" width=\"240\" alt=\"WhoWorks Logo\" style=\"display:block; filter:brightness(200%);\" />\n                                    </td>\n                                    <td width=\"50%\" valign=\"middle\" align=\"right\" class=\"v1profile-box\">\n                                        <table style=\"background:#1e293b; padding:12px 16px; border-radius:10px;\">\n                                            <tr>\n                                                <td>\n                                                    <table>\n                                                        <tr>\n                                                            <td rowspan=\"3\" valign=\"top\" style=\"padding-right:10px;\">\n                                                                <img src=\"https://ui-avatars.com/api/?name=Joanez+Andrades&background=1473E6&color=fff&size=60\" width=\"46\" alt=\"Avatar Joanez Andrades\" style=\"border-radius:50%;\" />\n                                                            </td>\n                                                            <td style=\"font-size:14px; color:#f1f5f9; font-weight:bold;\">Joanez Andrades</td>\n                                                        </tr>\n                                                        <tr>\n                                                            <td style=\"font-size:12px; color:#cbd5e1;\">Founder &amp; Lead Engineer</td>\n                                                        </tr>\n                                                        <tr>\n                                                            <td style=\"font-size:12px; color:#94a3b8;\">WhoWorks Consulting</td>\n                                                        </tr>\n                                                    </table>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </td>\n                                </tr>\n                            </table>\n                        </td>\n                    </tr>\n\n                   \n\n                    <!-- SIGNATURE -->\n                    <tr>\n                        <td style=\"padding:0 40px 40px 40px; font-size:14px; color:#333;\">\n                            Atenciosamente,<br><br>\n                            <strong>Joanez Andrades</strong><br>\n                            Founder &amp; Lead Engineer — WhoWorks Consulting<br>\n                            <a href=\"mailto:contato@whoworks.com.br\" style=\"color:#1473e6;\" rel=\"noreferrer\">contato@whoworks.com.br</a> &middot;\n                            <a href=\"https://whoworks.com.br\" style=\"color:#1473e6;\" target=\"_blank\" rel=\"noopener noreferrer\">whoworks.com.br</a>\n                        </td>\n                    </tr>\n\n                    <!-- FOOTER -->\n                    <tr>\n                        <td style=\"padding:20px; text-align:center; background:#f9fafb; font-size:12px; color:#777;\">\n                            WhoWorks Consulting<br>\n                            Soluções Técnicas em WordPress &bull; Automação &bull; Integrações<br>\n                            &copy; 2025 WhoWorks Consulting. Todos os direitos reservados.\n                        </td>\n                    </tr>\n                </table>\n            </td>\n        </tr>\n    </table>\n</body>\n</html>\n```"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2640,
+        112
+      ],
+      "id": "b6594748-a6a9-4a6d-8c90-f49600ad3199",
+      "name": "EmailGenerator",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "briefings",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Normalize Data').item.json['lead-id'] }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "qualified"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ $now }}"
+            },
+            {
+              "fieldId": "email_sent",
+              "fieldValue": "={{ $json.messageId ? 1 : 0 }}"
+            },
+            {
+              "fieldId": "email_sent_at",
+              "fieldValue": "={{ $now }}"
+            },
+            {
+              "fieldId": "email_error",
+              "fieldValue": "={{ $json.messageId ? 0 : 1 }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        -176
+      ],
+      "id": "f8e5ba4f-7ac4-48a8-bd3d-24f31b65d2d0",
+      "name": "UpdabeBriefingsStatus1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aiBpwmRxaTLKjgmp",
+          "name": "WhoWorks Account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "8dfb3668a50319c87f320ab3dff1fcbf8709e4188136a582e4a663f6b4e80f48@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "WhoWorks"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', `Defina a data entre 2~5 dias a partir de agora dependendo da urgência. Horário comercial(10-11h e 14:00 - 17h). Garanta que não seja feriado ou final de semana.  `, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -896,
+        448
+      ],
+      "id": "03ef51cf-a660-4c32-90a7-4462955396a2",
+      "name": "Verificar Agenda",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "mQfPGfwD29hCn2tT",
+          "name": "Google Account(jnz93.dev)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Omd2ldR7ehbUz0bs",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Omd2ldR7ehbUz0bs",
+          "cachedResultName": "[SubWorkflow] Funil 2: Save Briefing & Action Plan on WhoWorks"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "actionPlanTitle": "={{ $('Edit Fields').item.json.action_plan_title }}",
+            "briefingTitle": "={{ $('Edit Fields').item.json.briefing_title }}",
+            "briefingContent": "={{ $('Edit Fields').item.json.briefing_content }}",
+            "actionPlanContent": "={{ $('Edit Fields').item.json.action_plan_content }}",
+            "user_id": "={{ $json.id }}",
+            "user_mail": "={{ $('Normalize Data').item.json.email }}",
+            "user_name": "={{ $('Normalize Data').item.json['nome-completo'] }}",
+            "environment": "={{ $('Code in JavaScript').item.json.environment_type }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "briefingTitle",
+              "displayName": "briefingTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "briefingContent",
+              "displayName": "briefingContent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "actionPlanTitle",
+              "displayName": "actionPlanTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "actionPlanContent",
+              "displayName": "actionPlanContent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "user_mail",
+              "displayName": "user_mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "user_name",
+              "displayName": "user_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "environment",
+              "displayName": "environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        288,
+        192
+      ],
+      "id": "53009a75-b4d7-4f91-a070-ceb8daf2c767",
+      "name": "Call '[SubWorkflow] Save Briefing & Action Plan on WhoWorks'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "n4pOFy9HVbIYGhSh",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/n4pOFy9HVbIYGhSh",
+          "cachedResultName": "[SubWorkflow] WF3: Resolve WP USER"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $('Normalize Data').item.json.email }}",
+            "name": "={{ $('Normalize Data').item.json['nome-completo'] }}",
+            "environment": "={{ $json.environment_type }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "environment",
+              "displayName": "environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        192
+      ],
+      "id": "56bc8e1c-f76f-4b94-a128-9e25c3bbe337",
+      "name": "Call '[SubWorkflow] Funil 2: Identify or create new user'"
+    },
+    {
+      "parameters": {
+        "jsCode": "const endereco = $('Webhook').first().json.headers['user-agent'].split('; ')[1];\nconst tipo = endereco.startsWith('https://sandbox.') ? 'sandbox' : 'produção';\n\n\nreturn {\n  environment_type: tipo\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        192
+      ],
+      "id": "f37ae408-21d9-48aa-83bb-df87460bd253",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Mapeamento dos campos permitidos para cada tipo de briefing.\n * Adicione ou remova campos conforme a necessidade de cada fluxo.\n */\nconst BRIEFING_SCHEMAS = {\n  \"Operação Comercial e Leads\": [\n    \"nome-completo\",\n    \"email\",\n    \"telefone\",\n    \"empresa\",\n    \"cargo\",\n    \"linkedin\",\n    \"segmento\",\n    \"tamanho-empresa\",\n    \"localizacao\",\n    \"faturamento-anual\",\n    \"leads-origem\",\n    \"lead-acontece\",\n    \"leads-registro\",\n    \"canais-resposta\",\n    \"tempo-resposta\",\n    \"leads-semana\",\n    \"perda-motivos\",\n    \"follow-up\",\n    \"ferramenta-crm\",\n    \"resultado-esperado\",\n    \"notificacoes-responsavel\",\n    \"canal-avisos\",\n    \"msg-automatica\",\n    \"modelo-mensagem\",\n    \"integracao-whatsapp\",\n    \"observacoes-finais\",\n    \"agendar-reuniao\",\n    \"consent-term\"\n  ],\n  \"Técnico WordPress/WooCommerce\": [\n    \"nome-completo\",\n    \"email\",\n    \"telefone\",\n    \"empresa\",\n    \"cargo\",\n    \"linkedin\",\n    \"segmento\",\n    \"tamanho-empresa\",\n    \"localizacao\",\n    \"faturamento-anual\",\n    \"plataforma\",\n    \"problema-principal\",\n    \"problema-agora\",\n    \"site-producao\",\n    \"url-afetada\",\n    \"mantem-site\",\n    \"hospedagem-tipo\",\n    \"acesso-admin\",\n    \"acesso-hospedagem\",\n    \"backups-recentes\",\n    \"afeta-vendas\",\n    \"url-midia\",\n    \"prioridade\",\n    \"pedidos-mes\",\n    \"gateways\",\n    \"estoque\",\n    \"emissao-fiscal\",\n    \"erp-planilha\",\n    \"operacao-manual\",\n    \"pagespeed-feito\",\n    \"pagespeed-nota\",\n    \"cdn\",\n    \"invasao\",\n    \"plugin-seguranca\",\n    \"relatorio\",\n    \"aprovador\",\n    \"horario-manutencao\",\n    \"intervencao-producao\",\n    \"ambiente-staging\",\n    \"canal-atualizacoes\",\n    \"observacoes-finais\",\n    \"agendar-reuniao\",\n    \"consent-term\"\n  ],\n  \"Automação, Integrações e Desenvolvimento\": [\n    \"nome-completo\",\n    \"email\",\n    \"telefone\",\n    \"empresa\",\n    \"cargo\",\n    \"linkedin\",\n    \"segmento\",\n    \"tamanho-empresa\",\n    \"localizacao\",\n    \"faturamento-anual\",\n    \"problema-resolver\",\n    \"onde-acontece\",\n    \"sistemas-envolvidos\",\n    \"outros-sistemas\",\n    \"processo-manual\",\n    \"passo-a-passo\",\n    \"automatico-esperado\",\n    \"quem-executa\",\n    \"frequencia\",\n    \"regras-excecoes\",\n    \"api-documentacao\",\n    \"usa-ferramenta\",\n    \"interface-visual\",\n    \"impacto-esperado\",\n    \"feature-sistema\",\n    \"feature-usuarios\",\n    \"feature-referencia\",\n    \"feature-painel\",\n    \"feature-banco\",\n    \"feature-relatorios\",\n    \"feature-integracao\",\n    \"feature-permissoes\",\n    \"integracao-origem\",\n    \"integracao-destino\",\n    \"integracao-dados\",\n    \"integracao-tempo\",\n    \"integracao-erro\",\n    \"integracao-sandbox\",\n    \"integracao-api-doc\",\n    \"integracao-auth\",\n    \"ia-tarefa\",\n    \"ia-uso\",\n    \"ia-fontes\",\n    \"ia-memoria\",\n    \"ia-acionar-humano\",\n    \"ia-restricoes\",\n    \"conhecedor-processo\",\n    \"aprovador-escopo\",\n    \"canal-duvidas\",\n    \"reuniao-tecnica\",\n    \"disponibilidade-reuniao\",\n    \"observacoes-finais\",\n    \"agendar-reuniao\",\n    \"consent-term\"\n  ],\n  \"Triagem Geral/Outro\": [\n    \"nome-completo\",\n    \"email\",\n    \"telefone\",\n    \"empresa\",\n    \"cargo\",\n    \"linkedin\",\n    \"segmento\",\n    \"tamanho-empresa\",\n    \"localizacao\",\n    \"faturamento-anual\",\n    \"problema-principal-outro\",\n    \"area-problema-outro\",\n    \"ferramenta-envolvida-outro\",\n    \"resultado-esperado-outro\",\n    \"urgencia-outro\",\n    \"reuniao-explicar-outro\",\n    \"canal-preferido-outro\",\n    \"horario-conversa-outro\",\n    \"outros-contatos-outro\",\n    \"observacoes-finais\",\n    \"agendar-reuniao\",\n    \"consent-term\"\n  ]\n};\n\n/**\n * Função auxiliar para limpar uma string (trim, remover espaços extras).\n */\nfunction sanitizeString(value) {\n  if (typeof value === 'string') return value.trim();\n  return value;\n}\n\n/**\n * Função principal: recebe o payload bruto e retorna um novo objeto\n * sanitizado de acordo com o briefing-type.\n *\n * @param {Object} payload - Objeto contendo pelo menos a chave \"briefing-type\".\n * @returns {Object} Objeto com apenas os campos permitidos para aquele tipo,\n *                   todos os strings já com trim, e arrays mantidos como arrays.\n */\nfunction sanitizePayload(payload) {\n  const briefingType = payload['briefing-type'] || 'Triagem Geral/Outro';\n  const allowedFields = BRIEFING_SCHEMAS[briefingType] || BRIEFING_SCHEMAS['Triagem Geral/Outro'];\n\n  // Cria o novo objeto apenas com os campos permitidos\n  const sanitized = {};\n  allowedFields.forEach(field => {\n    if (payload.hasOwnProperty(field)) {\n      const rawValue = payload[field];\n      // Sanitiza strings (trim)\n      if (typeof rawValue === 'string') {\n        sanitized[field] = rawValue.trim();\n      } \n      // Se for array, mantém como array (mas pode optar por limpar cada string interna)\n      else if (Array.isArray(rawValue)) {\n        sanitized[field] = rawValue.map(item => \n          typeof item === 'string' ? item.trim() : item\n        );\n      } \n      // Outros tipos (number, boolean, etc.) são copiados sem alteração\n      else {\n        sanitized[field] = rawValue;\n      }\n    }\n  });\n\n  // (Opcional) Remove campos que ficaram com string vazia ou null/undefined\n  // Object.keys(sanitized).forEach(key => {\n  //   if (sanitized[key] === '' || sanitized[key] === null || sanitized[key] === undefined) {\n  //     delete sanitized[key];\n  //   }\n  // });\n  \n  // Adiciona o tipo e id-lead do formulário submetido ao payload sanitized\n  sanitized['briefing-type'] = payload['briefing-type'];\n  sanitized['lead-id'] = payload['lead-id'];\n  return sanitized;\n}\n\nconst sanitizedPayload = sanitizePayload($json['body']);\n\nreturn sanitizedPayload;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1904,
+        192
+      ],
+      "id": "fceb41b0-7977-4f91-bec2-c608d547bedf",
+      "name": "Normalize Data"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-lfs6.srv1550174.hstgr.cloud",
+            "user-agent": "WordPress/7.0.3; https://sandbox.whoworks.com.br",
+            "content-length": "1478",
+            "accept": "*/*",
+            "accept-encoding": "deflate, gzip",
+            "content-type": "application/json; charset=UTF-8",
+            "x-forwarded-for": "2a02:4780:13:1170:0:159e:737c:1",
+            "x-forwarded-host": "n8n-lfs6.srv1550174.hstgr.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "srv1550174",
+            "x-real-ip": "2a02:4780:13:1170:0:159e:737c:1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "briefing-type": "Técnico WordPress/WooCommerce",
+            "lead-id": "66",
+            "nome-completo": "Enzo Lima",
+            "email": "joanez_andrades@hotmail.com",
+            "telefone": "45646556456",
+            "empresa": "Brohnewbie",
+            "cargo": "CEO",
+            "linkedin": "https://meusite.com.br",
+            "segmento": "Serviços",
+            "tamanho-empresa": "1–10 funcionários",
+            "localizacao": "São Paulo, SP",
+            "faturamento-anual": "Até R$ 100 mil",
+            "plataforma": "WordPress + WooCommerce",
+            "problema-principal": [
+              "Erro no site",
+              "Lentidão",
+              "Falha de formulário",
+              "Integração parou de funcionar"
+            ],
+            "problema-agora": "Sim",
+            "site-producao": "Não, é staging",
+            "url-afetada": "https://meusite.com.br/problema-visivel",
+            "mantem-site": "Agência",
+            "hospedagem-tipo": "WP Engine",
+            "acesso-admin": "Sim",
+            "acesso-hospedagem": "Sim",
+            "backups-recentes": "Não sei",
+            "afeta-vendas": "Sim, indiretamente",
+            "url-midia": "",
+            "prioridade": "Alta — está afetando operação",
+            "pedidos-mes": "11‑50",
+            "gateways": [
+              "Outro"
+            ],
+            "estoque": [
+              "Sim, automaticamente"
+            ],
+            "emissao-fiscal": [
+              "Não"
+            ],
+            "erp-planilha": "",
+            "operacao-manual": "",
+            "pagespeed-feito": "",
+            "pagespeed-nota": "",
+            "cdn": "",
+            "invasao": "",
+            "plugin-seguranca": "",
+            "relatorio": "",
+            "aprovador": "Mario SAbino",
+            "horario-manutencao": "Durante o dia (com aviso)",
+            "intervencao-producao": "Sim, com aviso prévio",
+            "ambiente-staging": "Não sei",
+            "canal-atualizacoes": [
+              "WhatsApp"
+            ],
+            "observacoes-finais": "",
+            "agendar-reuniao": "Sim, prefiro horário comercial",
+            "consent-term": "1"
+          },
+          "webhookUrl": "https://n8n-lfs6.srv1550174.hstgr.cloud/webhook/d5a80179-5745-4aa2-ae48-e236f6559026",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Brief2Plan",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateLeads": {
+      "main": [
+        [
+          {
+            "node": "Brief2Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateNewBriefing": {
+      "main": [
+        [
+          {
+            "node": "UpdateLeads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Set to text/html",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set to text/html": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brief2Plan": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateInteracoes": {
+      "main": [
+        []
+      ]
+    },
+    "UpdateHistorico": {
+      "main": [
+        [
+          {
+            "node": "UpdateInteracoes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetInteracoes": {
+      "main": [
+        [
+          {
+            "node": "UpdateHistorico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdabeBriefingsStatus": {
+      "main": [
+        []
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "EmailGenerator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "EmailGenerator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EmailGenerator": {
+      "main": [
+        []
+      ]
+    },
+    "Send email": {
+      "main": [
+        [
+          {
+            "node": "UpdabeBriefingsStatus1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdabeBriefingsStatus1": {
+      "main": [
+        []
+      ]
+    },
+    "Verificar Agenda": {
+      "ai_tool": [
+        [
+          {
+            "node": "Brief2Plan",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call '[SubWorkflow] Save Briefing & Action Plan on WhoWorks'": {
+      "main": [
+        [
+          {
+            "node": "UpdabeBriefingsStatus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call '[SubWorkflow] Funil 2: Identify or create new user'": {
+      "main": [
+        [
+          {
+            "node": "Call '[SubWorkflow] Save Briefing & Action Plan on WhoWorks'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Call '[SubWorkflow] Funil 2: Identify or create new user'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Data": {
+      "main": [
+        [
+          {
+            "node": "CreateNewBriefing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d7217a93-82bf-4272-b984-7a1a952cc8ff",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14aca19250a37d2cf90830121913d504ce697564523af8686d5f54f4ff841f14"
+  },
+  "nodeGroups": [],
+  "id": "SYR33lQfc5eW6Qef",
+  "tags": [
+    {
+      "updatedAt": "2026-06-22T14:00:16.721Z",
+      "createdAt": "2026-06-22T14:00:16.721Z",
+      "id": "CdVBk4NBYDyhwDdJ",
+      "name": "Website Funil"
+    }
+  ]
+}
